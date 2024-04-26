@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:daily_tasks/models/notes.dart';
+import 'package:daily_tasks/models/models.dart';
 import 'package:daily_tasks/screens/add_note_screen.dart';
 import 'package:daily_tasks/screens/drawer_screen.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
@@ -11,9 +11,21 @@ import '../widgets/app_widgets.dart';
 bool showSearchBar = false;
 List weekDays = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Tur', 'Fri'];
 List texts = [];
+List copyOfTexts = [];
+
 List descriptions = [];
+List copyOfDescriptions = [];
+
 List dateTimes = [];
+List copyOfDateTimes = [];
+
 List containerColors = [];
+List copyOfContainerColors = [];
+
+List categories = [];
+List copyOfCategories = [];
+
+List searchItemIndexes = [];
 bool done = false;
 
 class HomeScreen extends StatefulWidget {
@@ -52,9 +64,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.grey[800],
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(5.0),
+                      padding: const EdgeInsets.all(10.0),
                       child: SvgPicture.asset(
-                        'assets/svgham.svg',
+                        'assets/ham3.svg',
                         colorFilter: const ColorFilter.mode(
                             Colors.white, BlendMode.srcATop),
                       ),
@@ -107,43 +119,75 @@ class _HomeScreenState extends State<HomeScreen> {
                                   width: size.width * 7 / 10,
                                   child: TextField(
                                     onChanged: (value) {
-                                      texts.clear();
-                                      descriptions.clear();
-                                      dateTimes.clear();
-                                      containerColors.clear();
-                                      Hive.box<Notes>('notesBox')
-                                          .values
-                                          .forEach(
-                                        (element) {
-                                          dateTimes.add({
-                                            'day': element.day,
-                                            'weekDay': element.weekDay,
-                                            'mounth': element.month,
-                                            'year': element.year
-                                          });
-                                          texts.add(element.title);
-                                          containerColors.add(
-                                            Color.fromARGB(
-                                              element.colorAlpha!,
-                                              element.colorRed!,
-                                              element.colorGreen!,
-                                              element.colorBlue!,
-                                            ),
-                                          );
-                                          descriptions.add(element.description);
-                                        },
-                                      );
+                                      // texts.clear();
+                                      // descriptions.clear();
+                                      // dateTimes.clear();
+                                      // categories.clear();
+                                      // containerColors.clear();
+                                      // searchItemIndexes.clear();
+                                      // Hive.box<Notes>('notesBox')
+                                      //     .values
+                                      //     .forEach(
+                                      //   (element) {
+                                      //     dateTimes.add({
+                                      //       'day': element.day,
+                                      //       'weekDay': element.weekDay,
+                                      //       'mounth': element.month,
+                                      //       'year': element.year
+                                      //     });
+                                      //     copyOfDateTimes = dateTimes;
+                                      //     print(copyOfDateTimes);
 
-                                      setState(() {
-                                        texts = texts.where((element) {
-                                          return element
-                                              .toString()
-                                              .toLowerCase()
-                                              .contains(value
-                                                  .toString()
-                                                  .toLowerCase());
-                                        }).toList();
-                                      });
+                                      //     texts.add(element.title);
+                                      //     copyOfTexts = texts;
+
+                                      //     categories.add(element.category);
+                                      //     copyOfCategories = categories;
+
+                                      //     containerColors.add(
+                                      //       Color.fromARGB(
+                                      //         element.colorAlpha!,
+                                      //         element.colorRed!,
+                                      //         element.colorGreen!,
+                                      //         element.colorBlue!,
+                                      //       ),
+                                      //     );
+                                      //     copyOfContainerColors =
+                                      //         containerColors;
+
+                                      //     descriptions.add(element.description);
+                                      //     copyOfDescriptions = descriptions;
+                                      //     print(copyOfDescriptions);
+                                      //   },
+                                      // );
+                                      // setState(() {
+                                      //   texts = texts.where((element) {
+                                      //     return element
+                                      //         .toString()
+                                      //         .toLowerCase()
+                                      //         .contains(
+                                      //           value.toString().toLowerCase(),
+                                      //         );
+                                      //   }).toList();
+                                      //   descriptions.clear();
+                                      //   dateTimes.clear();
+                                      //   categories.clear();
+                                      //   containerColors.clear();
+                                      //   for (var element in texts) {
+                                      //     searchItemIndexes.add(
+                                      //         copyOfTexts.indexOf(element));
+                                      //   }
+
+                                      //   for (var index in searchItemIndexes) {
+                                      //     descriptions
+                                      //         .add(copyOfDescriptions[index]);
+                                      //     dateTimes.add(copyOfDateTimes[index]);
+                                      //     containerColors.add(
+                                      //         copyOfContainerColors[index]);
+                                      //     categories
+                                      //         .add(copyOfCategories[index]);
+                                      //   }
+                                      // });
                                     },
                                     cursorColor: Colors.white,
                                     style: const TextStyle(color: Colors.white),
@@ -161,16 +205,16 @@ class _HomeScreenState extends State<HomeScreen> {
           floatingActionButton: fabWidget(),
           body: Center(
             child: texts.isEmpty
-                ? const Column(
+                ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.add_task_sharp,
-                        size: 60,
-                        color: Colors.white,
+                      SvgPicture.asset(
+                        'assets/ast.svg',
+                        colorFilter: const ColorFilter.mode(
+                            Colors.white, BlendMode.srcATop),
                       ),
-                      Text(
-                        'Add a note!',
+                      const Text(
+                        'Add a new Task!',
                         style: TextStyle(color: Colors.white, fontSize: 30),
                       )
                     ],
@@ -185,28 +229,43 @@ class _HomeScreenState extends State<HomeScreen> {
                               return LayoutBuilder(
                                   builder: (context, constraints) {
                                 return GestureDetector(
-                                  onLongPress: () {
-                                    PanaraConfirmDialog.showAnimatedGrow(
+                                  onTap: () {
+                                    Navigator.push(
                                       context,
-                                      title: "Delete this note?",
-                                      message:
-                                          "Are you sure you want to delete this note?",
-                                      confirmButtonText: "Yes",
-                                      cancelButtonText: "No",
-                                      onTapCancel: () {
-                                        Navigator.pop(context);
-                                      },
-                                      onTapConfirm: () {
-                                        Hive.box<Notes>('notesBox')
-                                            .deleteAt(index);
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return AddNoteScreen(
+                                            note: Notes(
+                                              id: index.toString(),
+                                              title: texts[index],
+                                              category: categories[index],
+                                              description: descriptions[index],
+                                              done: false,
+                                              colorAlpha:
+                                                  containerColors[index].alpha,
+                                              colorBlue:
+                                                  containerColors[index].blue,
+                                              colorGreen:
+                                                  containerColors[index].green,
+                                              colorRed:
+                                                  containerColors[index].red,
+                                              day: dateTimes[index]['day'],
+                                              hour: dateTimes[index]['hour'],
+                                              minute: dateTimes[index]
+                                                  ['minute'],
+                                              month: dateTimes[index]['mount'],
+                                              weekDay: dateTimes[index]
+                                                  ['weekDay'],
+                                              year: dateTimes[index]['year'],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ).then(
+                                      (value) {
                                         textsListCreate();
-                                        done = false;
                                         setState(() {});
-                                        Navigator.pop(context);
                                       },
-                                      panaraDialogType:
-                                          PanaraDialogType.warning,
-                                      noImage: true,
                                     );
                                   },
                                   child: Container(
@@ -234,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 fontStyle: FontStyle.normal,
                                               ),
                                               overflow: TextOverflow.ellipsis,
-                                              maxLines: 2,
+                                              maxLines: 1,
                                             ),
                                           ),
                                         ),
@@ -252,40 +311,33 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 color: Colors.black54,
                                               ),
                                               overflow: TextOverflow.ellipsis,
-                                              maxLines:
-                                                  constraints.maxHeight > 200
-                                                      ? 8
-                                                      : 3,
+                                              maxLines: 3,
                                             ),
                                           ),
                                         ),
                                         const Spacer(),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              right: 8, bottom: 0),
-                                          child: Row(
-                                            children: [
-                                              AnimatedContainer(
-                                                duration: const Duration(
-                                                    milliseconds: 500),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: SizedBox(
-                                                    width: size.width / 5,
+                                        Row(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8),
+                                              child: Row(
+                                                children: [
+                                                  SizedBox(
+                                                    width: size.width / 10,
                                                     child: ElevatedButton(
                                                       style: ElevatedButton
                                                           .styleFrom(
                                                         padding:
                                                             EdgeInsets.zero,
                                                         backgroundColor:
-                                                            Colors.teal,
+                                                            Colors.green,
                                                         shape:
                                                             RoundedRectangleBorder(
                                                           borderRadius:
                                                               BorderRadius
                                                                   .circular(
-                                                            12,
+                                                            16,
                                                           ),
                                                         ),
                                                       ),
@@ -313,11 +365,61 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           onTapConfirm: () {
                                                             Hive.box<Notes>(
                                                                     'notesBox')
-                                                                .deleteAt(
-                                                                    index);
+                                                                .putAt(
+                                                              index,
+                                                              Notes(
+                                                                id: index
+                                                                    .toString(),
+                                                                title: texts[
+                                                                    index],
+                                                                category:
+                                                                    categories[
+                                                                        index],
+                                                                description:
+                                                                    descriptions[
+                                                                        index],
+                                                                done: true,
+                                                                colorAlpha:
+                                                                    containerColors[
+                                                                            index]
+                                                                        .alpha,
+                                                                colorBlue:
+                                                                    containerColors[
+                                                                            index]
+                                                                        .blue,
+                                                                colorGreen:
+                                                                    containerColors[
+                                                                            index]
+                                                                        .green,
+                                                                colorRed:
+                                                                    containerColors[
+                                                                            index]
+                                                                        .red,
+                                                                day: dateTimes[
+                                                                        index]
+                                                                    ['day'],
+                                                                hour: dateTimes[
+                                                                        index]
+                                                                    ['hour'],
+                                                                minute: dateTimes[
+                                                                        index]
+                                                                    ['minute'],
+                                                                month: dateTimes[
+                                                                        index]
+                                                                    ['mount'],
+                                                                weekDay: dateTimes[
+                                                                        index]
+                                                                    ['weekDay'],
+                                                                year: dateTimes[
+                                                                        index]
+                                                                    ['year'],
+                                                              ),
+                                                            );
                                                             textsListCreate();
-                                                            done = false;
-                                                            setState(() {});
+
+                                                            setState(() {
+                                                              done = false;
+                                                            });
                                                             Navigator.pop(
                                                                 context);
                                                           },
@@ -340,49 +442,128 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 strokeWidth: 1,
                                                               ),
                                                             )
-                                                          : const Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              children: [
-                                                                Text(
-                                                                  'Done',
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                          .white),
-                                                                ),
-                                                                SizedBox(
-                                                                  width: 4,
-                                                                ),
-                                                                Icon(
-                                                                    Icons.check,
-                                                                    size: 15,
-                                                                    color: Colors
-                                                                        .white)
-                                                              ],
+                                                          : const Icon(
+                                                              Icons.check,
+                                                              size: 20,
+                                                              color:
+                                                                  Colors.white,
                                                             ),
                                                     ),
                                                   ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            4.0),
+                                                    child: Row(
+                                                      children: [
+                                                        SizedBox(
+                                                          width:
+                                                              size.width / 10,
+                                                          child: ElevatedButton(
+                                                            style:
+                                                                ElevatedButton
+                                                                    .styleFrom(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .zero,
+                                                              backgroundColor:
+                                                                  Colors.red,
+                                                              shape:
+                                                                  RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                  16,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            onPressed: () {
+                                                              setState(() {
+                                                                done = true;
+                                                              });
+                                                              PanaraConfirmDialog
+                                                                  .showAnimatedGrow(
+                                                                context,
+                                                                title:
+                                                                    "Delete this note?",
+                                                                message:
+                                                                    "Are you sure you want to delete this note?",
+                                                                confirmButtonText:
+                                                                    "Yes",
+                                                                cancelButtonText:
+                                                                    "No",
+                                                                onTapCancel:
+                                                                    () {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  setState(() {
+                                                                    done =
+                                                                        false;
+                                                                  });
+                                                                },
+                                                                onTapConfirm:
+                                                                    () {
+                                                                  Hive.box<Notes>(
+                                                                          'notesBox')
+                                                                      .deleteAt(
+                                                                          index);
+                                                                  textsListCreate();
+                                                                  setState(() {
+                                                                    done =
+                                                                        false;
+                                                                  });
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                                panaraDialogType:
+                                                                    PanaraDialogType
+                                                                        .warning,
+                                                                noImage: true,
+                                                              );
+                                                            },
+                                                            child: done
+                                                                ? SizedBox(
+                                                                    width: 20,
+                                                                    height: 20,
+                                                                    child:
+                                                                        CircularProgressIndicator(
+                                                                      color: colorItems[
+                                                                          index %
+                                                                              colorItems.length],
+                                                                      strokeWidth:
+                                                                          1,
+                                                                    ),
+                                                                  )
+                                                                : const Icon(
+                                                                    Icons.close,
+                                                                    size: 20,
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            const Spacer(),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 15),
+                                              child: Text(
+                                                '${weekDays[dateTimes[index]['weekDay']]} - ${dateTimes[index]['day'].toString()}',
+                                                softWrap: false,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  color: Colors.black38,
+                                                  fontSize: 15,
                                                 ),
                                               ),
-                                              const Spacer(),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: 15),
-                                                child: Text(
-                                                  '${weekDays[dateTimes[index]['weekDay']]} - ${dateTimes[index]['day'].toString()}',
-                                                  softWrap: false,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: const TextStyle(
-                                                    color: Colors.black38,
-                                                    fontSize: 15,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        )
+                                            ),
+                                          ],
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -414,25 +595,56 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget fabWidget() {
-    return FloatingActionButton(
-      shape: const CircleBorder(),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return const AddNoteScreen();
+    return SizedBox(
+      height: 65,
+      width: 65,
+      child: FloatingActionButton(
+        shape: const CircleBorder(),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return AddNoteScreen(
+                  note: Notes(
+                    category: '',
+                    colorAlpha: 0,
+                    day: 0,
+                    description: '',
+                    done: done,
+                    hour: 0,
+                    id: '',
+                    minute: 0,
+                    month: 0,
+                    title: '',
+                    weekDay: 0,
+                    year: 0,
+                    colorRed: 0,
+                    colorBlue: 0,
+                    colorGreen: 0,
+                  ),
+                );
+              },
+            ),
+          ).then(
+            (value) {
+              textsListCreate();
+              setState(() {
+                anythingToShow = false;
+              });
             },
+          );
+        },
+        backgroundColor: Colors.grey[800],
+        child: SizedBox(
+          height: 35,
+          width: 35,
+          child: SvgPicture.asset(
+            'assets/edit2.svg',
+            colorFilter:
+                const ColorFilter.mode(Colors.white, BlendMode.srcATop),
           ),
-        ).then((value) {
-          textsListCreate();
-          setState(() {});
-        });
-      },
-      backgroundColor: Colors.grey[800],
-      child: const Icon(
-        Icons.add,
-        color: Colors.white,
+        ),
       ),
     );
   }
@@ -441,18 +653,39 @@ class _HomeScreenState extends State<HomeScreen> {
     descriptions.clear();
     texts.clear();
     dateTimes.clear();
+    categories.clear();
     containerColors.clear();
-    Hive.box<Notes>('notesBox').values.forEach((element) {
-      dateTimes.add({
-        'day': element.day,
-        'weekDay': element.weekDay,
-        'mounth': element.month,
-        'year': element.year
-      });
-      texts.add(element.title);
-      descriptions.add(element.description);
-      containerColors.add(Color.fromARGB(element.colorAlpha!, element.colorRed!,
-          element.colorGreen!, element.colorBlue!));
-    });
+    Hive.box<Notes>('notesBox').values.forEach(
+      (element) {
+        if (!element.done!) {
+          dateTimes.add({
+            'day': element.day,
+            'weekDay': element.weekDay,
+            'mounth': element.month,
+            'year': element.year
+          });
+          texts.add(element.title);
+          categories.add(element.category);
+          descriptions.add(element.description);
+          containerColors.add(Color.fromARGB(element.colorAlpha!,
+              element.colorRed!, element.colorGreen!, element.colorBlue!));
+        }
+      },
+    );
   }
 }
+
+
+// descriptions : desc 332 , desc , desc 5
+// texts : title 7 , title 1 , title 5
+// copy of texts :  title 7 , title 1 , title 5
+
+
+// texts : title 7 , title 5
+// indexes : 0 , 2
+// descriptions : desc 332 , desc 5
+
+
+
+
+

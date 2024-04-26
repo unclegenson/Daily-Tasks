@@ -80,13 +80,15 @@ class _CalenderWidgetState extends State<CalenderWidget> {
   }
 }
 
-String? descriptionText;
+String? mainDescriptionText;
 
 class DescriptionInputWidget extends StatefulWidget {
   const DescriptionInputWidget({
     super.key,
     required this.size,
+    required this.descriptionText,
   });
+  final String descriptionText;
 
   final Size size;
 
@@ -96,13 +98,22 @@ class DescriptionInputWidget extends StatefulWidget {
 
 class _DescriptionInputWidgetState extends State<DescriptionInputWidget> {
   @override
+  void initState() {
+    setState(() {
+      mainDescriptionText = widget.descriptionText;
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.size.width - 30,
       child: TextFormField(
+        initialValue: mainDescriptionText,
         onChanged: (value) {
           setState(() {
-            descriptionText = value;
+            mainDescriptionText = value;
           });
         },
         maxLines: 6,
@@ -124,14 +135,16 @@ class _DescriptionInputWidgetState extends State<DescriptionInputWidget> {
   }
 }
 
-String? titleText;
+String? mainTitleText;
 
 class TitleInputWidget extends StatefulWidget {
   const TitleInputWidget({
     super.key,
     required this.size,
+    required this.titleText,
   });
 
+  final String titleText;
   final Size size;
 
   @override
@@ -140,13 +153,22 @@ class TitleInputWidget extends StatefulWidget {
 
 class _TitleInputWidgetState extends State<TitleInputWidget> {
   @override
+  void initState() {
+    setState(() {
+      mainTitleText = widget.titleText;
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.size.width - 30,
       child: TextFormField(
+        initialValue: mainTitleText,
         onChanged: (value) {
           setState(() {
-            titleText = value;
+            mainTitleText = value;
           });
         },
         style: const TextStyle(color: Colors.white),

@@ -1,5 +1,8 @@
+import 'package:daily_tasks/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import '../widgets/drawer_widget.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 String mahdiImg = 'assets/images/me.jpg';
 String maryamImg = 'assets/images/maryam.jpg';
@@ -36,6 +39,14 @@ class _DrawerWidgetState extends State<DrawerWidget>
   void dispose() {
     animeController.dispose();
     super.dispose();
+  }
+
+  Future<void> _openUrl(String url) async {
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   @override
@@ -196,7 +207,7 @@ class _DrawerWidgetState extends State<DrawerWidget>
                                     ],
                                   ),
                                   title: Text(maryamName),
-                                  subtitle: Text(mahdiNumber),
+                                  subtitle: Text(maryamNumber),
                                 ),
                               ],
                             )
@@ -206,39 +217,58 @@ class _DrawerWidgetState extends State<DrawerWidget>
                 ),
               ),
             ),
-            const DrawerListTile(
+            DrawerListTile(
+              func: () {},
               text: 'Review',
               icon: Icons.bar_chart_rounded,
             ),
-            const DrawerListTile(
+            DrawerListTile(
+              func: () {},
               text: 'Go Premium',
               icon: Icons.workspace_premium,
             ),
-            const DrawerListTile(
-              text: 'App Theme',
-              icon: Icons.color_lens_outlined,
-            ),
-            const DrawerListTile(
+            DrawerListTile(
+              func: () {},
               text: 'Add Category',
               icon: Icons.category_outlined,
             ),
-            const DrawerListTile(
+            DrawerListTile(
+              func: () {},
               text: 'Language',
               icon: Icons.language_rounded,
             ),
-            const DrawerListTile(text: 'Settings', icon: Icons.settings),
+            DrawerListTile(
+              text: 'Settings',
+              icon: Icons.settings,
+              func: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return SettingsScreen();
+                    },
+                  ),
+                );
+              },
+            ),
             const Divider(
               thickness: 1,
               indent: 20,
               endIndent: 20,
             ),
-            const DrawerListTile(
+            DrawerListTile(
               text: 'Invite Friends',
               icon: Icons.person_add,
+              func: () async {
+                await Share.share('check out this app...');
+              },
             ),
-            const DrawerListTile(
+            DrawerListTile(
               text: 'Contact Us',
               icon: Icons.bubble_chart_rounded,
+              func: () {
+                _openUrl('mailto:unclegenson@gmail.com');
+              },
             ),
           ],
         ),

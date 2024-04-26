@@ -1,13 +1,15 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
-import 'package:daily_tasks/models/notes.dart';
+import 'package:daily_tasks/models/models.dart';
 import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import '../widgets/add_note_widget.dart';
+import 'package:image_picker/image_picker.dart';
 
 final List<String> items = [
   'Sport',
@@ -34,15 +36,16 @@ List colorItems = const [
 String? selectedCategory;
 
 class AddNoteScreen extends StatefulWidget {
-  const AddNoteScreen({super.key});
+  const AddNoteScreen({super.key, required this.note});
+  final Notes note;
 
   @override
   State<AddNoteScreen> createState() => _AddNoteScreenState();
 }
 
-Color? themeColor;
 Color? selectedColor;
 Color? _shadeColor = Colors.blue[800];
+bool anythingToShow = false;
 
 class _AddNoteScreenState extends State<AddNoteScreen> {
   void _openDialog(String title, Widget content) {
@@ -50,7 +53,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       context: context,
       builder: (_) {
         return AlertDialog(
-          backgroundColor: Colors.white70,
+          backgroundColor: Colors.white38,
           contentPadding: const EdgeInsets.all(18.0),
           title: Text(title),
           content: content,
@@ -81,6 +84,80 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     );
   }
 
+  Future showOptions() async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                backgroundColor: selectedColor,
+              ),
+              child: const Text(
+                'Photo Gallery',
+                style: TextStyle(color: Colors.black),
+              ),
+              onPressed: () {
+                // close the options modal
+                Navigator.of(context).pop();
+                // get image from gallery
+                getImageFromGallery();
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                backgroundColor: selectedColor,
+              ),
+              child: const Text(
+                'Camera',
+                style: TextStyle(color: Colors.black),
+              ),
+              onPressed: () {
+                // close the options modal
+                Navigator.of(context).pop();
+                // get image from camera
+                getImageFromCamera();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  File? _image;
+  final picker = ImagePicker();
+
+  //Image Picker function to get image from gallery
+  Future getImageFromGallery() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      }
+    });
+  }
+
+  //Image Picker function to get image from camera
+  Future getImageFromCamera() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      }
+    });
+  }
+
   void _openColorPicker() async {
     _openDialog(
       "Color picker",
@@ -94,8 +171,22 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   @override
   void initState() {
     setState(() {
-      selectedColor = colorItems[Random().nextInt(colorItems.length)];
-      themeColor = selectedColor;
+      if (widget.note.title == '') {
+        setState(() {
+          anythingToShow = false;
+        });
+      } else {
+        setState(() {
+          anythingToShow = true;
+          mainTitleText = widget.note.title;
+          mainDescriptionText = widget.note.description;
+          selectedCategory = widget.note.category;
+        });
+      }
+      selectedColor = anythingToShow
+          ? Color.fromARGB(widget.note.colorAlpha!, widget.note.colorRed!,
+              widget.note.colorGreen!, widget.note.colorBlue!)
+          : colorItems[Random().nextInt(colorItems.length)];
     });
     super.initState();
   }
@@ -108,20 +199,33 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       child: Scaffold(
         backgroundColor: Colors.black87,
         appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_rounded,
-              //todo: svg arrow back button
-              color: Colors.white,
-              size: 25,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+          leading: Builder(builder: (context) {
+            return InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.grey[800],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: SvgPicture.asset(
+                      'assets/back2.svg',
+                      colorFilter: const ColorFilter.mode(
+                          Colors.white, BlendMode.srcATop),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }),
           backgroundColor: Colors.black87,
-          title: const MyAppBarTitle(
-            title: 'Add Task',
+          title: MyAppBarTitle(
+            title: anythingToShow ? 'Edit Task' : 'Add Task',
             fontSize: 46,
           ),
           titleSpacing: 10,
@@ -137,7 +241,10 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  TitleInputWidget(size: size),
+                  TitleInputWidget(
+                    size: size,
+                    titleText: anythingToShow ? widget.note.title! : '',
+                  ),
                   DropdownButtonFormField2(
                     style: const TextStyle(color: Colors.white),
                     isExpanded: true,
@@ -148,9 +255,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    hint: const Text(
-                      'Category',
-                      style: TextStyle(
+                    hint: Text(
+                      anythingToShow ? widget.note.category! : 'Category',
+                      style: const TextStyle(
                         color: Colors.white,
                       ),
                     ),
@@ -195,10 +302,13 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 16),
                     ),
                   ),
-                  DescriptionInputWidget(size: size),
+                  DescriptionInputWidget(
+                    size: size,
+                    descriptionText: widget.note.description!,
+                  ),
                   GestureDetector(
                     onTap: () {
-                      //todo: connect to gallery for choosing photo
+                      showOptions();
                     },
                     child: Container(
                       height: 160,
@@ -207,32 +317,35 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: Colors.white70, width: 0.4),
                       ),
-                      child: const Align(
-                        alignment: Alignment.topCenter,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                          child: Stack(
-                            alignment: Alignment.topLeft,
-                            children: [
-                              Text(
-                                'Attach an image',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w300,
+                      child: Stack(
+                        children: [
+                          _image == null
+                              ? const Text('No Image selected')
+                              : Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Image.file(
+                                        _image!,
+                                      ),
+                                    ),
+                                  ),
                                 ),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 18, top: 18),
+                            child: Text(
+                              'Attach an image',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w300,
                               ),
-                              Center(
-                                child: Icon(
-                                  Icons.attach_file_outlined,
-                                  size: 50,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   ),
@@ -274,45 +387,76 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      if (titleText != null && descriptionText != null) {
-                        await Hive.box<Notes>('notesBox').add(
-                          Notes(
-                            category: selectedCategory,
-                            colorAlpha: selectedColor?.alpha,
-                            colorRed: selectedColor?.red,
-                            colorBlue: selectedColor?.blue,
-                            colorGreen: selectedColor?.green,
-                            day: time.day,
-                            description: descriptionText,
-                            done: false,
-                            hour: time.hour,
-                            id: time.toString(),
-                            minute: time.minute,
-                            month: time.month,
-                            title: titleText,
-                            weekDay: time.weekday,
-                            year: time.year,
-                          ),
-                        );
-                        selectedCategory = null;
-                        descriptionText = null;
-                        titleText = null;
+                      if (mainTitleText == null ||
+                          mainDescriptionText == null ||
+                          selectedCategory == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             duration: Duration(milliseconds: 1500),
                             behavior: SnackBarBehavior.fixed,
-                            content: Text('Note Added!'),
+                            content: Text('Input data is empty!'),
                           ),
                         );
-                        Navigator.pop(context);
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            duration: Duration(milliseconds: 1500),
-                            behavior: SnackBarBehavior.fixed,
-                            content: Text('Input data has problems!'),
-                          ),
-                        );
+                        anythingToShow
+                            ? await Hive.box<Notes>('notesBox').putAt(
+                                int.parse(widget.note.id!),
+                                Notes(
+                                  category: selectedCategory,
+                                  colorAlpha: selectedColor?.alpha,
+                                  colorRed: selectedColor?.red,
+                                  colorBlue: selectedColor?.blue,
+                                  colorGreen: selectedColor?.green,
+                                  day: time.day,
+                                  description: mainDescriptionText,
+                                  done: false,
+                                  hour: time.hour,
+                                  id: time.toString(),
+                                  minute: time.minute,
+                                  month: time.month,
+                                  title: mainTitleText,
+                                  weekDay: time.weekday,
+                                  year: time.year,
+                                ),
+                              )
+                            : await Hive.box<Notes>('notesBox').add(
+                                Notes(
+                                  category: selectedCategory,
+                                  colorAlpha: selectedColor?.alpha,
+                                  colorRed: selectedColor?.red,
+                                  colorBlue: selectedColor?.blue,
+                                  colorGreen: selectedColor?.green,
+                                  day: time.day,
+                                  description: mainDescriptionText,
+                                  done: false,
+                                  hour: time.hour,
+                                  id: time.toString(),
+                                  minute: time.minute,
+                                  month: time.month,
+                                  title: mainTitleText,
+                                  weekDay: time.weekday,
+                                  year: time.year,
+                                ),
+                              );
+                        selectedCategory = null;
+                        mainDescriptionText = null;
+                        mainTitleText = null;
+                        anythingToShow
+                            ? ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  duration: Duration(milliseconds: 1500),
+                                  behavior: SnackBarBehavior.fixed,
+                                  content: Text('Task Edited!'),
+                                ),
+                              )
+                            : ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  duration: Duration(milliseconds: 1500),
+                                  behavior: SnackBarBehavior.fixed,
+                                  content: Text('Task Added!'),
+                                ),
+                              );
+                        Navigator.pop(context);
                       }
                     },
                     child: AnimatedContainer(
@@ -324,10 +468,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                       ),
                       width: size.width - 30,
                       height: 60,
-                      child: const Center(
+                      child: Center(
                         child: Text(
-                          'Create Task',
-                          style: TextStyle(color: Colors.black, fontSize: 20),
+                          anythingToShow ? 'Edit Task' : 'Create Task',
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 20),
                         ),
                       ),
                     ),

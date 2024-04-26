@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-part 'notes.g.dart';
+part 'models.g.dart';
 
 @HiveType(typeId: 0)
 class Notes {
@@ -54,4 +54,30 @@ class Notes {
   int? colorGreen;
   @HiveField(14)
   int? colorBlue;
+}
+
+@HiveType(typeId: 1)
+class Categories {
+  Categories({
+    required this.name,
+  });
+
+  @HiveField(0)
+  String? name;
+}
+
+@HiveType(typeId: 2)
+class ProfileData {
+  ProfileData({
+    required this.name,
+    required this.number,
+    required this.image,
+  });
+
+  @HiveField(0)
+  String? name;
+  @HiveField(1)
+  String? number;
+  @HiveField(2)
+  String? image;
 }
