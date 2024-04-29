@@ -22,13 +22,12 @@ String numberController = '';
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   void readProfileData() {
-    print('read');
     return Hive.box<ProfileData>('profileBox').values.forEach(
       (element) {
         setState(() {
           nameController = element.name!;
           numberController = element.number!;
-          _image = element.image!;
+          _image = element.image;
         });
       },
     );
@@ -92,14 +91,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() {
       if (pickedFile != null) {
         _image = pickedFile.path;
-        Hive.box<ProfileData>('profileBox').putAt(
-          0,
-          ProfileData(
-            name: nameController,
-            number: numberController,
-            image: _image.toString(),
-          ),
-        );
       }
     });
   }
@@ -111,14 +102,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() {
       if (pickedFile != null) {
         _image = pickedFile.path;
-        Hive.box<ProfileData>('profileBox').putAt(
-          0,
-          ProfileData(
-            name: nameController,
-            number: numberController,
-            image: _image.toString(),
-          ),
-        );
       }
     });
   }
@@ -126,9 +109,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 //todo: problem with showing the image for the first time
   @override
   Widget build(BuildContext context) {
-    print('--------------------------------------');
-    print(Hive.box<ProfileData>('profileBox').length.toString());
-
     Hive.box<ProfileData>('profileBox').length == 0
         ? Hive.box<ProfileData>('profileBox').add(
             ProfileData(
@@ -189,11 +169,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 child: Stack(
                   alignment: Alignment.bottomRight,
                   children: [
-                    CircleAvatar(
-                      backgroundColor: selectedColor,
-                      backgroundImage: FileImage(File(_image!)),
-                      radius: size.width / 2 - 30,
-                    ),
+                    _image == null
+                        ? CircleAvatar(
+                            backgroundColor: selectedColor,
+                            radius: size.width / 2 - 30,
+                          )
+                        : CircleAvatar(
+                            backgroundColor: selectedColor,
+                            backgroundImage: FileImage(File(_image!)),
+                            radius: size.width / 2 - 30,
+                          ),
                     GestureDetector(
                       onTap: showOptions,
                       child: Padding(
@@ -255,10 +240,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: selectedColor,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Hive.box<ProfileData>('profileBox').putAt(
+                      0,
+                      ProfileData(
+                        name: nameController,
+                        number: numberController,
+                        image: _image.toString(),
+                      ),
+                    );
+                    Navigator.pop(context);
+                  },
                   child: const Text(
                     'Done',
                     style: TextStyle(color: Colors.black, fontSize: 20),

@@ -402,7 +402,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                             ? await Hive.box<Notes>('notesBox').putAt(
                                 int.parse(widget.note.id!),
                                 Notes(
-                                  image: _image.toString(),
+                                  // image: _image.toString(),
                                   category: selectedCategory,
                                   colorAlpha: selectedColor?.alpha,
                                   colorRed: selectedColor?.red,
@@ -422,7 +422,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                               )
                             : await Hive.box<Notes>('notesBox').add(
                                 Notes(
-                                  image: _image.toString(),
+                                  // image: _image.toString(),
                                   category: selectedCategory,
                                   colorAlpha: selectedColor?.alpha,
                                   colorRed: selectedColor?.red,

@@ -241,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         builder: (context) {
                                           return AddNoteScreen(
                                             note: Notes(
-                                              image: boxImage[index],
+                                              // image: boxImage[index],
                                               id: index.toString(),
                                               title: texts[index],
                                               category: categories[index],
@@ -381,8 +381,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                     .putAt(
                                                                   index,
                                                                   Notes(
-                                                                    image: boxImage[
-                                                                        index],
+                                                                    // image: boxImage[
+                                                                    //     index],
                                                                     id: index
                                                                         .toString(),
                                                                     title: texts[
@@ -593,30 +593,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ],
                                         ),
                                       ),
-                                      boxImage[index] != null
-                                          ? SizedBox(
-                                              height: 60,
-                                              width: 60,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                                child: Image.file(
-                                                  File(
-                                                    boxImage[index]
-                                                        .toString()
-                                                        .substring(
-                                                          5,
-                                                          boxImage[index]
-                                                                  .toString()
-                                                                  .length -
-                                                              1,
-                                                        ),
-                                                  ),
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                            )
-                                          : const SizedBox(),
+                                      // boxImage[index] != null
+                                      //     ? SizedBox(
+                                      //         height: 60,
+                                      //         width: 60,
+                                      //         child: ClipRRect(
+                                      //           borderRadius:
+                                      //               BorderRadius.circular(30),
+                                      //           child: Image.file(
+                                      //             File(
+                                      //               boxImage[index]
+                                      //                   .toString()
+                                      //                   .substring(
+                                      //                     5,
+                                      //                     boxImage[index]
+                                      //                             .toString()
+                                      //                             .length -
+                                      //                         1,
+                                      //                   ),
+                                      //             ),
+                                      //             fit: BoxFit.cover,
+                                      //           ),
+                                      //         ),
+                                      //       )
+                                      //     : const SizedBox(),
                                     ],
                                   ),
                                 );
@@ -659,7 +659,7 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (context) {
                 return AddNoteScreen(
                   note: Notes(
-                    image: '',
+                    // image: '',
                     category: '',
                     colorAlpha: 0,
                     day: 0,
@@ -712,7 +712,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Hive.box<Notes>('notesBox').values.forEach(
       (element) {
         if (!element.done!) {
-          boxImage.add(element.image);
+          // boxImage.add(element.image);
 
           dateTimes.add({
             'day': element.day,
@@ -741,8 +741,3 @@ class _HomeScreenState extends State<HomeScreen> {
 // texts : title 7 , title 5
 // indexes : 0 , 2
 // descriptions : desc 332 , desc 5
-
-
-
-
-

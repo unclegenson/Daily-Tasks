@@ -16,8 +16,6 @@ void main() async {
   runApp(const App());
 }
 
-List<Box> boxList = [];
-
 class App extends StatelessWidget {
   const App({super.key});
 
