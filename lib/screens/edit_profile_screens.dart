@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:daily_tasks/models/models.dart';
 import 'package:daily_tasks/screens/add_note_screen.dart';
-import 'package:daily_tasks/screens/drawer_screen.dart';
 import 'package:daily_tasks/screens/settings_screen.dart';
 import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';

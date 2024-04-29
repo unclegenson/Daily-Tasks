@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -27,6 +29,9 @@ List copyOfCategories = [];
 
 List searchItemIndexes = [];
 bool done = false;
+
+List copyOfBoxImage = [];
+List boxImage = [];
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -236,6 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         builder: (context) {
                                           return AddNoteScreen(
                                             note: Notes(
+                                              image: boxImage[index],
                                               id: index.toString(),
                                               title: texts[index],
                                               category: categories[index],
@@ -268,304 +274,350 @@ class _HomeScreenState extends State<HomeScreen> {
                                       },
                                     );
                                   },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: containerColors[index],
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.only(
-                                            left: 12,
-                                            right: 10,
-                                            top: 10,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.topLeft,
-                                            child: Text(
-                                              texts[index],
-                                              style: const TextStyle(
-                                                fontSize: 22,
-                                                fontWeight: FontWeight.w500,
-                                                fontStyle: FontStyle.normal,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
-                                            ),
-                                          ),
+                                  child: Stack(
+                                    alignment: Alignment.topRight,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: containerColors[index],
                                         ),
-                                        Container(
-                                          padding: const EdgeInsets.only(
-                                              left: 12, right: 10),
-                                          child: Align(
-                                            alignment: Alignment.topLeft,
-                                            child: Text(
-                                              descriptions[index],
-                                              style: const TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w500,
-                                                fontStyle: FontStyle.normal,
-                                                color: Colors.black54,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 3,
-                                            ),
-                                          ),
-                                        ),
-                                        const Spacer(),
-                                        Row(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
                                           children: [
-                                            Padding(
+                                            Container(
                                               padding: const EdgeInsets.only(
-                                                  left: 8),
-                                              child: Row(
-                                                children: [
-                                                  SizedBox(
-                                                    width: size.width / 10,
-                                                    child: ElevatedButton(
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        padding:
-                                                            EdgeInsets.zero,
-                                                        backgroundColor:
-                                                            Colors.green,
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                            16,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      onPressed: () {
-                                                        setState(() {
-                                                          done = true;
-                                                        });
-                                                        PanaraConfirmDialog
-                                                            .showAnimatedGrow(
-                                                          context,
-                                                          title: "Done?",
-                                                          message:
-                                                              "Press Yes if you'he done this task.",
-                                                          confirmButtonText:
-                                                              "Yes",
-                                                          cancelButtonText:
-                                                              "No",
-                                                          onTapCancel: () {
-                                                            Navigator.pop(
-                                                                context);
-                                                            setState(() {
-                                                              done = false;
-                                                            });
-                                                          },
-                                                          onTapConfirm: () {
-                                                            Hive.box<Notes>(
-                                                                    'notesBox')
-                                                                .putAt(
-                                                              index,
-                                                              Notes(
-                                                                id: index
-                                                                    .toString(),
-                                                                title: texts[
-                                                                    index],
-                                                                category:
-                                                                    categories[
-                                                                        index],
-                                                                description:
-                                                                    descriptions[
-                                                                        index],
-                                                                done: true,
-                                                                colorAlpha:
-                                                                    containerColors[
-                                                                            index]
-                                                                        .alpha,
-                                                                colorBlue:
-                                                                    containerColors[
-                                                                            index]
-                                                                        .blue,
-                                                                colorGreen:
-                                                                    containerColors[
-                                                                            index]
-                                                                        .green,
-                                                                colorRed:
-                                                                    containerColors[
-                                                                            index]
-                                                                        .red,
-                                                                day: dateTimes[
-                                                                        index]
-                                                                    ['day'],
-                                                                hour: dateTimes[
-                                                                        index]
-                                                                    ['hour'],
-                                                                minute: dateTimes[
-                                                                        index]
-                                                                    ['minute'],
-                                                                month: dateTimes[
-                                                                        index]
-                                                                    ['mount'],
-                                                                weekDay: dateTimes[
-                                                                        index]
-                                                                    ['weekDay'],
-                                                                year: dateTimes[
-                                                                        index]
-                                                                    ['year'],
-                                                              ),
-                                                            );
-                                                            textsListCreate();
-
-                                                            setState(() {
-                                                              done = false;
-                                                            });
-                                                            Navigator.pop(
-                                                                context);
-                                                          },
-                                                          panaraDialogType:
-                                                              PanaraDialogType
-                                                                  .warning,
-                                                          noImage: true,
-                                                        );
-                                                      },
-                                                      child: done
-                                                          ? SizedBox(
-                                                              width: 20,
-                                                              height: 20,
-                                                              child:
-                                                                  CircularProgressIndicator(
-                                                                color: colorItems[
-                                                                    index %
-                                                                        colorItems
-                                                                            .length],
-                                                                strokeWidth: 1,
-                                                              ),
-                                                            )
-                                                          : const Icon(
-                                                              Icons.check,
-                                                              size: 20,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            4.0),
-                                                    child: Row(
-                                                      children: [
-                                                        SizedBox(
-                                                          width:
-                                                              size.width / 10,
-                                                          child: ElevatedButton(
-                                                            style:
-                                                                ElevatedButton
-                                                                    .styleFrom(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .zero,
-                                                              backgroundColor:
-                                                                  Colors.red,
-                                                              shape:
-                                                                  RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                  16,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            onPressed: () {
-                                                              setState(() {
-                                                                done = true;
-                                                              });
-                                                              PanaraConfirmDialog
-                                                                  .showAnimatedGrow(
-                                                                context,
-                                                                title:
-                                                                    "Delete this note?",
-                                                                message:
-                                                                    "Are you sure you want to delete this note?",
-                                                                confirmButtonText:
-                                                                    "Yes",
-                                                                cancelButtonText:
-                                                                    "No",
-                                                                onTapCancel:
-                                                                    () {
-                                                                  Navigator.pop(
-                                                                      context);
-                                                                  setState(() {
-                                                                    done =
-                                                                        false;
-                                                                  });
-                                                                },
-                                                                onTapConfirm:
-                                                                    () {
-                                                                  Hive.box<Notes>(
-                                                                          'notesBox')
-                                                                      .deleteAt(
-                                                                          index);
-                                                                  textsListCreate();
-                                                                  setState(() {
-                                                                    done =
-                                                                        false;
-                                                                  });
-                                                                  Navigator.pop(
-                                                                      context);
-                                                                },
-                                                                panaraDialogType:
-                                                                    PanaraDialogType
-                                                                        .warning,
-                                                                noImage: true,
-                                                              );
-                                                            },
-                                                            child: done
-                                                                ? SizedBox(
-                                                                    width: 20,
-                                                                    height: 20,
-                                                                    child:
-                                                                        CircularProgressIndicator(
-                                                                      color: colorItems[
-                                                                          index %
-                                                                              colorItems.length],
-                                                                      strokeWidth:
-                                                                          1,
-                                                                    ),
-                                                                  )
-                                                                : const Icon(
-                                                                    Icons.close,
-                                                                    size: 20,
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
+                                                left: 12,
+                                                right: 10,
+                                                top: 10,
                                               ),
-                                            ),
-                                            const Spacer(),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 15),
-                                              child: Text(
-                                                '${weekDays[dateTimes[index]['weekDay']]} - ${dateTimes[index]['day'].toString()}',
-                                                softWrap: false,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(
-                                                  color: Colors.black38,
-                                                  fontSize: 15,
+                                              child: Align(
+                                                alignment: Alignment.topLeft,
+                                                child: Text(
+                                                  texts[index],
+                                                  style: const TextStyle(
+                                                    fontSize: 22,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontStyle: FontStyle.normal,
+                                                  ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 1,
                                                 ),
                                               ),
                                             ),
+                                            Container(
+                                              padding: const EdgeInsets.only(
+                                                  left: 12, right: 10),
+                                              child: Align(
+                                                alignment: Alignment.topLeft,
+                                                child: Text(
+                                                  descriptions[index],
+                                                  style: const TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontStyle: FontStyle.normal,
+                                                    color: Colors.black54,
+                                                  ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 3,
+                                                ),
+                                              ),
+                                            ),
+                                            const Spacer(),
+                                            Row(
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8),
+                                                  child: Row(
+                                                    children: [
+                                                      SizedBox(
+                                                        width: size.width / 10,
+                                                        child: ElevatedButton(
+                                                          style: ElevatedButton
+                                                              .styleFrom(
+                                                            padding:
+                                                                EdgeInsets.zero,
+                                                            backgroundColor:
+                                                                Colors.green,
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                16,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              done = true;
+                                                            });
+                                                            PanaraConfirmDialog
+                                                                .showAnimatedGrow(
+                                                              context,
+                                                              title: "Done?",
+                                                              message:
+                                                                  "Press Yes if you'he done this task.",
+                                                              confirmButtonText:
+                                                                  "Yes",
+                                                              cancelButtonText:
+                                                                  "No",
+                                                              onTapCancel: () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                                setState(() {
+                                                                  done = false;
+                                                                });
+                                                              },
+                                                              onTapConfirm: () {
+                                                                Hive.box<Notes>(
+                                                                        'notesBox')
+                                                                    .putAt(
+                                                                  index,
+                                                                  Notes(
+                                                                    image: boxImage[
+                                                                        index],
+                                                                    id: index
+                                                                        .toString(),
+                                                                    title: texts[
+                                                                        index],
+                                                                    category:
+                                                                        categories[
+                                                                            index],
+                                                                    description:
+                                                                        descriptions[
+                                                                            index],
+                                                                    done: true,
+                                                                    colorAlpha:
+                                                                        containerColors[index]
+                                                                            .alpha,
+                                                                    colorBlue:
+                                                                        containerColors[index]
+                                                                            .blue,
+                                                                    colorGreen:
+                                                                        containerColors[index]
+                                                                            .green,
+                                                                    colorRed:
+                                                                        containerColors[index]
+                                                                            .red,
+                                                                    day: dateTimes[
+                                                                            index]
+                                                                        ['day'],
+                                                                    hour: dateTimes[
+                                                                            index]
+                                                                        [
+                                                                        'hour'],
+                                                                    minute: dateTimes[
+                                                                            index]
+                                                                        [
+                                                                        'minute'],
+                                                                    month: dateTimes[
+                                                                            index]
+                                                                        [
+                                                                        'mount'],
+                                                                    weekDay: dateTimes[
+                                                                            index]
+                                                                        [
+                                                                        'weekDay'],
+                                                                    year: dateTimes[
+                                                                            index]
+                                                                        [
+                                                                        'year'],
+                                                                  ),
+                                                                );
+                                                                textsListCreate();
+
+                                                                setState(() {
+                                                                  done = false;
+                                                                });
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              panaraDialogType:
+                                                                  PanaraDialogType
+                                                                      .warning,
+                                                              noImage: true,
+                                                            );
+                                                          },
+                                                          child: done
+                                                              ? SizedBox(
+                                                                  width: 20,
+                                                                  height: 20,
+                                                                  child:
+                                                                      CircularProgressIndicator(
+                                                                    color: colorItems[index %
+                                                                        colorItems
+                                                                            .length],
+                                                                    strokeWidth:
+                                                                        1,
+                                                                  ),
+                                                                )
+                                                              : const Icon(
+                                                                  Icons.check,
+                                                                  size: 20,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(4.0),
+                                                        child: Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  size.width /
+                                                                      10,
+                                                              child:
+                                                                  ElevatedButton(
+                                                                style: ElevatedButton
+                                                                    .styleFrom(
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .zero,
+                                                                  backgroundColor:
+                                                                      Colors
+                                                                          .red,
+                                                                  shape:
+                                                                      RoundedRectangleBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius
+                                                                            .circular(
+                                                                      16,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                onPressed: () {
+                                                                  setState(() {
+                                                                    done = true;
+                                                                  });
+                                                                  PanaraConfirmDialog
+                                                                      .showAnimatedGrow(
+                                                                    context,
+                                                                    title:
+                                                                        "Delete this note?",
+                                                                    message:
+                                                                        "Are you sure you want to delete this note?",
+                                                                    confirmButtonText:
+                                                                        "Yes",
+                                                                    cancelButtonText:
+                                                                        "No",
+                                                                    onTapCancel:
+                                                                        () {
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                      setState(
+                                                                          () {
+                                                                        done =
+                                                                            false;
+                                                                      });
+                                                                    },
+                                                                    onTapConfirm:
+                                                                        () {
+                                                                      Hive.box<Notes>(
+                                                                              'notesBox')
+                                                                          .deleteAt(
+                                                                              index);
+                                                                      textsListCreate();
+                                                                      setState(
+                                                                          () {
+                                                                        done =
+                                                                            false;
+                                                                      });
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                    },
+                                                                    panaraDialogType:
+                                                                        PanaraDialogType
+                                                                            .warning,
+                                                                    noImage:
+                                                                        true,
+                                                                  );
+                                                                },
+                                                                child: done
+                                                                    ? SizedBox(
+                                                                        width:
+                                                                            20,
+                                                                        height:
+                                                                            20,
+                                                                        child:
+                                                                            CircularProgressIndicator(
+                                                                          color:
+                                                                              colorItems[index % colorItems.length],
+                                                                          strokeWidth:
+                                                                              1,
+                                                                        ),
+                                                                      )
+                                                                    : const Icon(
+                                                                        Icons
+                                                                            .close,
+                                                                        size:
+                                                                            20,
+                                                                        color: Colors
+                                                                            .white,
+                                                                      ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                                const Spacer(),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 15),
+                                                  child: Text(
+                                                    '${weekDays[dateTimes[index]['weekDay']]} - ${dateTimes[index]['day'].toString()}',
+                                                    softWrap: false,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                      color: Colors.black38,
+                                                      fontSize: 15,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                      boxImage[index] != null
+                                          ? SizedBox(
+                                              height: 60,
+                                              width: 60,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                                child: Image.file(
+                                                  File(
+                                                    boxImage[index]
+                                                        .toString()
+                                                        .substring(
+                                                          5,
+                                                          boxImage[index]
+                                                                  .toString()
+                                                                  .length -
+                                                              1,
+                                                        ),
+                                                  ),
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            )
+                                          : const SizedBox(),
+                                    ],
                                   ),
                                 );
                               });
@@ -607,6 +659,7 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (context) {
                 return AddNoteScreen(
                   note: Notes(
+                    image: '',
                     category: '',
                     colorAlpha: 0,
                     day: 0,
@@ -655,15 +708,19 @@ class _HomeScreenState extends State<HomeScreen> {
     dateTimes.clear();
     categories.clear();
     containerColors.clear();
+    boxImage.clear();
     Hive.box<Notes>('notesBox').values.forEach(
       (element) {
         if (!element.done!) {
+          boxImage.add(element.image);
+
           dateTimes.add({
             'day': element.day,
             'weekDay': element.weekDay,
             'mounth': element.month,
             'year': element.year
           });
+
           texts.add(element.title);
           categories.add(element.category);
           descriptions.add(element.description);

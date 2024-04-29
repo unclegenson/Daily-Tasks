@@ -32,13 +32,14 @@ class NotesAdapter extends TypeAdapter<Notes> {
       colorRed: fields[12] as int?,
       colorBlue: fields[14] as int?,
       colorGreen: fields[13] as int?,
+      image: fields[15] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Notes obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -68,7 +69,9 @@ class NotesAdapter extends TypeAdapter<Notes> {
       ..writeByte(13)
       ..write(obj.colorGreen)
       ..writeByte(14)
-      ..write(obj.colorBlue);
+      ..write(obj.colorBlue)
+      ..writeByte(15)
+      ..write(obj.image);
   }
 
   @override
