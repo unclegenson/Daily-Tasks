@@ -1,36 +1,62 @@
 import 'dart:io';
 
-import 'package:daily_tasks/models/models.dart';
 import 'package:daily_tasks/screens/add_note_screen.dart';
 import 'package:daily_tasks/screens/settings_screen.dart';
 import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
-
+  const EditProfileScreen(
+      {super.key,
+      required this.image,
+      required this.name,
+      required this.number});
+  final String image;
+  final String name;
+  final String number;
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-String? _image;
+String imageController = '';
 String nameController = '';
 String numberController = '';
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  void readProfileData() {
-    return Hive.box<ProfileData>('profileBox').values.forEach(
-      (element) {
-        setState(() {
-          nameController = element.name!;
-          numberController = element.number!;
-          _image = element.image;
-        });
-      },
-    );
+  @override
+  void initState() {
+    loadProfileData();
+    // setProfileData();
+    super.initState();
+  }
+
+  loadProfileData() async {
+    SharedPreferences prefProfileImage = await SharedPreferences.getInstance();
+    SharedPreferences prefProfileName = await SharedPreferences.getInstance();
+    SharedPreferences prefProfileNumber = await SharedPreferences.getInstance();
+
+    setState(() {
+      nameController = prefProfileName.getString('profileName')!;
+      numberController = prefProfileNumber.getString('profileNumber')!;
+      imageController = prefProfileImage.getString('profileImage')!;
+    });
+    print(numberController);
+  }
+
+  setProfileData() async {
+    SharedPreferences isActivePref = await SharedPreferences.getInstance();
+    SharedPreferences prefProfileImage = await SharedPreferences.getInstance();
+    SharedPreferences prefProfileName = await SharedPreferences.getInstance();
+    SharedPreferences prefProfileNumber = await SharedPreferences.getInstance();
+
+    await isActivePref.setBool('isActive', true);
+    await prefProfileNumber.setString('profileNumber', numberController);
+    await prefProfileName.setString('profileName', nameController);
+    await prefProfileImage.setString('profileImage', imageController);
   }
 
   Future showOptions() async {
@@ -90,7 +116,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     setState(() {
       if (pickedFile != null) {
-        _image = pickedFile.path;
+        setState(() {
+          imageController = pickedFile.path;
+        });
+        print(imageController);
       }
     });
   }
@@ -101,25 +130,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     setState(() {
       if (pickedFile != null) {
-        _image = pickedFile.path;
+        setState(() {
+          imageController = pickedFile.path;
+        });
       }
     });
   }
 
-//todo: problem with showing the image for the first time
   @override
   Widget build(BuildContext context) {
-    Hive.box<ProfileData>('profileBox').length == 0
-        ? Hive.box<ProfileData>('profileBox').add(
-            ProfileData(
-              name: 'Mohammad Mahdi',
-              number: '+98 910 063 9128',
-              image:
-                  '/data/user/0/com.example.daily_tasks/cache/161dde68-1b06-4985-9c2d-137af4535567/IMG_0155.jpg',
-            ),
-          )
-        : readProfileData();
-
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.black87,
@@ -154,9 +173,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           },
         ),
         backgroundColor: Colors.black87,
-        title: const MyAppBarTitle(
+        title: MyAppBarTitle(
           fontSize: 46,
-          title: 'Edit Profile',
+          title: imageController == '' ? 'Edit Profile' : 'Create Profile',
         ),
       ),
       body: Padding(
@@ -169,14 +188,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 child: Stack(
                   alignment: Alignment.bottomRight,
                   children: [
-                    _image == null
+                    imageController == ''
                         ? CircleAvatar(
                             backgroundColor: selectedColor,
                             radius: size.width / 2 - 30,
                           )
                         : CircleAvatar(
                             backgroundColor: selectedColor,
-                            backgroundImage: FileImage(File(_image!)),
+                            backgroundImage: FileImage(File(imageController)),
                             radius: size.width / 2 - 30,
                           ),
                     GestureDetector(
@@ -244,14 +263,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
                   onPressed: () {
-                    Hive.box<ProfileData>('profileBox').putAt(
-                      0,
-                      ProfileData(
-                        name: nameController,
-                        number: numberController,
-                        image: _image.toString(),
-                      ),
-                    );
+                    setProfileData();
                     Navigator.pop(context);
                   },
                   child: const Text(

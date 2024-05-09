@@ -1,19 +1,13 @@
+import 'dart:io';
+
+import 'package:daily_tasks/screens/add_category_screen.dart';
+import 'package:daily_tasks/screens/add_note_screen.dart';
 import 'package:daily_tasks/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/drawer_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-String mahdiImg = 'assets/images/me.jpg';
-String maryamImg = 'assets/images/maryam.jpg';
-String mahdiName = 'Mohammad Mahdi';
-String mahdiNumber = '+98 910 063 9128';
-String maryamNumber = '+98 930 969 7796';
-String maryamName = 'Maryam';
-
-String showImg = mahdiImg;
-String showName = mahdiName;
-String showNumber = mahdiNumber;
 
 late AnimationController animeController;
 
@@ -30,6 +24,7 @@ class _DrawerWidgetState extends State<DrawerWidget>
     with TickerProviderStateMixin {
   @override
   void initState() {
+    getProfile();
     animeController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 500));
     super.initState();
@@ -47,6 +42,22 @@ class _DrawerWidgetState extends State<DrawerWidget>
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  String showImg = '';
+  String showName = '';
+  String showNumber = '';
+
+  getProfile() async {
+    SharedPreferences prefProfileImage = await SharedPreferences.getInstance();
+    SharedPreferences prefProfileName = await SharedPreferences.getInstance();
+    SharedPreferences prefProfileNumber = await SharedPreferences.getInstance();
+
+    setState(() {
+      showImg = prefProfileImage.getString('profileImage')!;
+      showName = prefProfileName.getString('profileName')!;
+      showNumber = prefProfileNumber.getString('profileNumber')!;
+    });
   }
 
   @override
@@ -68,11 +79,16 @@ class _DrawerWidgetState extends State<DrawerWidget>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CircleAvatar(
-                        radius: 60,
-                        backgroundImage: AssetImage(showImg),
-                        backgroundColor: Colors.black,
-                      ),
+                      showName == ''
+                          ? CircleAvatar(
+                              radius: 60,
+                              backgroundColor: selectedColor,
+                            )
+                          : CircleAvatar(
+                              radius: 60,
+                              backgroundImage: FileImage(File(showImg)),
+                              backgroundColor: selectedColor,
+                            ),
                       const SizedBox(
                         height: 12,
                       ),
@@ -102,116 +118,11 @@ class _DrawerWidgetState extends State<DrawerWidget>
                               ),
                             ],
                           ),
-                          const Spacer(),
-                          GestureDetector(
-                            onTapDown: (TapDownDetails details) {
-                              setState(() {
-                                if (isExpanded == true) {
-                                  animeController.forward();
-                                  isExpanded = !isExpanded;
-                                } else {
-                                  animeController.reverse();
-                                  isExpanded = !isExpanded;
-                                }
-                              });
-                            },
-                            child: CircleAvatar(
-                              backgroundColor: Colors.white54,
-                              child: AnimatedIcon(
-                                progress: animeController,
-                                icon: AnimatedIcons.menu_arrow,
-                                color: Colors.black,
-                                size: 24,
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                       const SizedBox(
                         height: 6,
                       ),
-                      isExpanded
-                          ? Column(
-                              children: [
-                                ListTile(
-                                  visualDensity: const VisualDensity(
-                                    horizontal: 0,
-                                    vertical: -4,
-                                  ),
-                                  contentPadding: EdgeInsets.zero,
-                                  leading: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      CircleAvatar(
-                                        backgroundColor: Colors.black,
-                                        backgroundImage: AssetImage(mahdiImg),
-                                      ),
-                                      !isSelected
-                                          ? const Padding(
-                                              padding: EdgeInsets.only(
-                                                  left: 24, top: 24),
-                                              child: Icon(
-                                                Icons.check_circle,
-                                                size: 18,
-                                                color: Colors.purple,
-                                              ),
-                                            )
-                                          : const SizedBox()
-                                    ],
-                                  ),
-                                  title: Text(mahdiName),
-                                  selected: !isSelected,
-                                  onTap: () {
-                                    setState(() {
-                                      isSelected = !isSelected;
-                                      showName = mahdiName;
-                                      showImg = mahdiImg;
-                                      showNumber = mahdiNumber;
-                                    });
-                                  },
-                                  selectedColor: Colors.purple,
-                                  subtitle: Text(mahdiNumber),
-                                ),
-                                ListTile(
-                                  onTap: () {
-                                    setState(() {
-                                      isSelected = !isSelected;
-                                      showName = maryamName;
-                                      showImg = maryamImg;
-                                      showNumber = maryamNumber;
-                                    });
-                                  },
-                                  selectedColor: Colors.purple,
-                                  selected: isSelected,
-                                  visualDensity: const VisualDensity(
-                                      horizontal: 0, vertical: -4),
-                                  contentPadding: EdgeInsets.zero,
-                                  leading: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      CircleAvatar(
-                                        backgroundColor: Colors.black,
-                                        backgroundImage: AssetImage(maryamImg),
-                                      ),
-                                      isSelected
-                                          ? const Padding(
-                                              padding: EdgeInsets.only(
-                                                  left: 24, top: 24),
-                                              child: Icon(
-                                                Icons.check_circle,
-                                                size: 18,
-                                                color: Colors.purple,
-                                              ),
-                                            )
-                                          : const SizedBox(),
-                                    ],
-                                  ),
-                                  title: Text(maryamName),
-                                  subtitle: Text(maryamNumber),
-                                ),
-                              ],
-                            )
-                          : const SizedBox()
                     ],
                   ),
                 ),
@@ -228,7 +139,16 @@ class _DrawerWidgetState extends State<DrawerWidget>
               icon: Icons.workspace_premium,
             ),
             DrawerListTile(
-              func: () {},
+              func: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return const AddCategoryScreen();
+                    },
+                  ),
+                );
+              },
               text: 'Add Category',
               icon: Icons.category_outlined,
             ),
@@ -245,10 +165,10 @@ class _DrawerWidgetState extends State<DrawerWidget>
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return SettingsScreen();
+                      return const SettingsScreen();
                     },
                   ),
-                );
+                ).then((value) => getProfile());
               },
             ),
             const Divider(

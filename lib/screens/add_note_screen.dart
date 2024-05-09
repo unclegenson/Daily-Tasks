@@ -11,13 +11,7 @@ import 'package:flutter_material_color_picker/flutter_material_color_picker.dart
 import '../widgets/add_note_widget.dart';
 import 'package:image_picker/image_picker.dart';
 
-final List<String> items = [
-  'Sport',
-  'Book',
-  'HomeWork',
-  'Work',
-  'Personal',
-];
+List categoryItems = [];
 
 List colorItems = const [
   Color.fromARGB(255, 137, 207, 240),
@@ -171,6 +165,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   @override
   void initState() {
     setState(() {
+      categoryItems.clear();
+
+      Hive.box<Categories>('categoryBox').values.forEach((element) {
+        categoryItems.add(element.name);
+      });
       if (widget.note.title == '') {
         setState(() {
           anythingToShow = false;
@@ -261,7 +260,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                         color: Colors.white,
                       ),
                     ),
-                    items: items
+                    items: categoryItems
                         .map((item) => DropdownMenuItem<String>(
                               value: item,
                               child: Text(
@@ -320,7 +319,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                       child: Stack(
                         children: [
                           _image == null
-                              ? const Text('No Image selected')
+                              ? const SizedBox()
                               : Center(
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),

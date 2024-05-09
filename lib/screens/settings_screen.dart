@@ -1,3 +1,4 @@
+import 'package:daily_tasks/main.dart';
 import 'package:daily_tasks/models/models.dart';
 import 'package:daily_tasks/screens/add_note_screen.dart';
 import 'package:daily_tasks/screens/edit_profile_screens.dart';
@@ -73,7 +74,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return const EditProfileScreen();
+                      return EditProfileScreen(
+                          image: profileImage,
+                          name: profileName,
+                          number: profileNumber);
                     },
                   ),
                 );
