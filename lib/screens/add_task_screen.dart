@@ -94,13 +94,13 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       showDialog(
         context: context,
         builder: (context) {
-          return Column(
+          return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   backgroundColor: selectedColor,
                 ),
@@ -115,10 +115,13 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   getImageFromGallery();
                 },
               ),
+              const SizedBox(
+                width: 10,
+              ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   backgroundColor: selectedColor,
                 ),

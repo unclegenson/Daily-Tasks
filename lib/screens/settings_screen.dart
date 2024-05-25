@@ -221,7 +221,7 @@ class Settingbutton extends StatelessWidget {
       width: size.width,
       height: 45,
       child: ListTile(
-        visualDensity: VisualDensity(vertical: -4),
+        visualDensity: const VisualDensity(vertical: -4),
         onTap: func,
         title: Text(
           text,

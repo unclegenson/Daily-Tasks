@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:daily_tasks/models/notification_model.dart';
 import 'package:daily_tasks/screens/add_task_screen.dart';
 import 'package:daily_tasks/screens/home.dart';
 import 'package:daily_tasks/screens/settings_screen.dart';
@@ -76,13 +75,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        return Column(
+        return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 backgroundColor: selectedColor,
               ),
@@ -97,10 +96,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 getImageFromGallery();
               },
             ),
+            const SizedBox(
+              width: 10,
+            ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 backgroundColor: selectedColor,
               ),
@@ -224,8 +226,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             shape: BoxShape.circle,
                             color: Colors.black54,
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
+                          child: const Padding(
+                            padding: EdgeInsets.all(10.0),
                             child: Icon(
                               Icons.edit,
                               size: 30,
@@ -301,7 +303,7 @@ It'll unreachable for others.'''),
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return HomeScreen();
+                              return const HomeScreen();
                             },
                           ),
                         );
