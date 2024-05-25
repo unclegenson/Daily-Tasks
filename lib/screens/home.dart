@@ -3,7 +3,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:daily_tasks/models/models.dart';
-import 'package:daily_tasks/screens/add_note_screen.dart';
+import 'package:daily_tasks/screens/add_task_screen.dart';
 import 'package:daily_tasks/screens/drawer_screen.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import '../widgets/app_widgets.dart';
@@ -29,7 +29,7 @@ List searchItemIndexes = [];
 bool done = false;
 
 List copyOfBoxImage = [];
-List boxImage = [];
+List boxImages = [];
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -239,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         builder: (context) {
                                           return AddNoteScreen(
                                             note: Notes(
-                                              // image: boxImage[index],
+                                              image: boxImages[index],
                                               id: index.toString(),
                                               title: texts[index],
                                               category: categories[index],
@@ -389,8 +389,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                       .putAt(
                                                                     index,
                                                                     Notes(
-                                                                      // image: boxImage[
-                                                                      //     index],
+                                                                      image: boxImages[
+                                                                          index],
                                                                       id: index
                                                                           .toString(),
                                                                       title: texts[
@@ -672,7 +672,7 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (context) {
                 return AddNoteScreen(
                   note: Notes(
-                    // image: '',
+                    image: '',
                     category: '',
                     colorAlpha: 0,
                     day: 0,
@@ -702,13 +702,18 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
         backgroundColor: Colors.grey[800],
-        child: SizedBox(
+        child: const SizedBox(
           height: 35,
           width: 35,
-          child: SvgPicture.asset(
-            'assets/edit2.svg',
-            colorFilter:
-                const ColorFilter.mode(Colors.white, BlendMode.srcATop),
+          // child: SvgPicture.asset(
+          //   'assets/edit2.svg',
+          //   colorFilter:
+          //       const ColorFilter.mode(Colors.white, BlendMode.srcATop),
+          // ),
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+            size: 30,
           ),
         ),
       ),
@@ -721,7 +726,7 @@ class _HomeScreenState extends State<HomeScreen> {
     dateTimes.clear();
     categories.clear();
     containerColors.clear();
-    boxImage.clear();
+    boxImages.clear();
     Hive.box<Notes>('notesBox').values.forEach(
       (element) {
         if (!element.done!) {
@@ -733,7 +738,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'mounth': element.month,
             'year': element.year
           });
-
+          boxImages.add(element.image);
           texts.add(element.title);
           categories.add(element.category);
           descriptions.add(element.description);

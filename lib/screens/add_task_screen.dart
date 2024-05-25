@@ -8,6 +8,7 @@ import 'package:daily_tasks/models/models.dart';
 import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/add_note_widget.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -79,55 +80,68 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   }
 
   Future showOptions() async {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+    SharedPreferences premium = await SharedPreferences.getInstance();
+    if (!premium.getBool('purchase')!) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'You are not a Premium contact yet!',
+          ),
+          duration: Duration(milliseconds: 2500),
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  backgroundColor: selectedColor,
                 ),
-                backgroundColor: selectedColor,
-              ),
-              child: const Text(
-                'Photo Gallery',
-                style: TextStyle(color: Colors.black),
-              ),
-              onPressed: () {
-                // close the options modal
-                Navigator.of(context).pop();
-                // get image from gallery
-                getImageFromGallery();
-              },
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                child: const Text(
+                  'Photo Gallery',
+                  style: TextStyle(color: Colors.black),
                 ),
-                backgroundColor: selectedColor,
+                onPressed: () {
+                  // close the options modal
+                  Navigator.of(context).pop();
+                  // get image from gallery
+                  getImageFromGallery();
+                },
               ),
-              child: const Text(
-                'Camera',
-                style: TextStyle(color: Colors.black),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  backgroundColor: selectedColor,
+                ),
+                child: const Text(
+                  'Camera',
+                  style: TextStyle(color: Colors.black),
+                ),
+                onPressed: () {
+                  // close the options modal
+                  Navigator.of(context).pop();
+                  // get image from camera
+                  getImageFromCamera();
+                },
               ),
-              onPressed: () {
-                // close the options modal
-                Navigator.of(context).pop();
-                // get image from camera
-                getImageFromCamera();
-              },
-            ),
-          ],
-        );
-      },
-    );
+            ],
+          );
+        },
+      );
+    }
   }
 
   File? _image;
+  String? imageString;
   final picker = ImagePicker();
 
   //Image Picker function to get image from gallery
@@ -137,6 +151,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
+        imageString = pickedFile.path;
       }
     });
   }
@@ -144,10 +159,10 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   //Image Picker function to get image from camera
   Future getImageFromCamera() async {
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
-
     setState(() {
       if (pickedFile != null) {
-        _image = File(pickedFile.path);
+        _image = File(pickedFile.path); // for showing image
+        imageString = pickedFile.path; // for hive
       }
     });
   }
@@ -180,6 +195,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           mainTitleText = widget.note.title;
           mainDescriptionText = widget.note.description;
           selectedCategory = widget.note.category;
+          _image = File(widget.note.image!);
         });
       }
       selectedColor = anythingToShow
@@ -401,7 +417,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                             ? await Hive.box<Notes>('notesBox').putAt(
                                 int.parse(widget.note.id!),
                                 Notes(
-                                  // image: _image.toString(),
+                                  image: imageString,
                                   category: selectedCategory,
                                   colorAlpha: selectedColor?.alpha,
                                   colorRed: selectedColor?.red,
@@ -421,7 +437,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                               )
                             : await Hive.box<Notes>('notesBox').add(
                                 Notes(
-                                  // image: _image.toString(),
+                                  image: imageString,
                                   category: selectedCategory,
                                   colorAlpha: selectedColor?.alpha,
                                   colorRed: selectedColor?.red,

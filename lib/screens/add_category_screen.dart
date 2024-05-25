@@ -1,5 +1,5 @@
 import 'package:daily_tasks/models/models.dart';
-import 'package:daily_tasks/screens/add_note_screen.dart';
+import 'package:daily_tasks/screens/add_task_screen.dart';
 import 'package:daily_tasks/screens/settings_screen.dart';
 import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';
@@ -120,6 +120,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
                   child: SettingsCategoryWidget(
+                      color: Colors.white,
                       text:
                           !wantToChange ? 'Add Category :' : 'Edit Category :'),
                 ),

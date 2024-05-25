@@ -1,4 +1,4 @@
-import 'package:daily_tasks/screens/add_note_screen.dart';
+import 'package:daily_tasks/screens/add_task_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bottom_picker/bottom_picker.dart';
@@ -21,28 +21,30 @@ DateTime time = DateTime.now();
 class _CalenderWidgetState extends State<CalenderWidget> {
   @override
   Widget build(BuildContext context) {
-    time = DateTime.now();
-    void openDatePicker(BuildContext context) {
-      BottomPicker.date(
-        pickerTitle: const Text(
+    void openDateTimePicker(BuildContext context) {
+      BottomPicker.dateTime(
+        pickerTitle: Text(
           'Choose Note Date',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 15,
-            color: Colors.blue,
+            fontSize: 18,
+            color: selectedColor,
           ),
         ),
+        gradientColors: [selectedColor!, Colors.blue],
+        backgroundColor: Colors.black87,
+        closeIconColor: selectedColor!,
         initialDateTime: DateTime.now(),
         maxDateTime: DateTime(2030),
         minDateTime: DateTime(DateTime.now().year),
         pickerTextStyle: const TextStyle(
           color: Colors.blue,
           fontWeight: FontWeight.bold,
-          fontSize: 12,
+          fontSize: 14,
         ),
-        onSubmit: (index) {
+        onChange: (p0) {
           setState(() {
-            time = index;
+            time = p0;
             showTime = true;
           });
         },
@@ -59,7 +61,7 @@ class _CalenderWidgetState extends State<CalenderWidget> {
       height: 100,
       child: InkWell(
         onTap: () {
-          return openDatePicker(context);
+          return openDateTimePicker(context);
         },
         child: Center(
           child: Column(
@@ -69,7 +71,11 @@ class _CalenderWidgetState extends State<CalenderWidget> {
                 Icons.edit_calendar,
               ),
               Text(
-                '${time.day.toString()} / ${time.month.toString()} / ${time.year.toString()}',
+                '${time.day.toString()} - ${time.month.toString()} - ${time.year.toString()}',
+                style: const TextStyle(fontSize: 20),
+              ),
+              Text(
+                '${time.hour.toString().length > 1 ? time.hour.toString() : '0${time.hour.toString()}'} : ${time.minute.toString().length > 1 ? time.minute.toString() : '0${time.minute.toString()}'} ',
                 style: const TextStyle(fontSize: 20),
               ),
             ],
@@ -174,10 +180,6 @@ class _TitleInputWidgetState extends State<TitleInputWidget> {
         style: const TextStyle(color: Colors.white),
         cursorColor: Colors.white,
         decoration: InputDecoration(
-          suffixIcon: const Icon(
-            Icons.mic,
-            color: Colors.white,
-          ),
           hintStyle: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w300,

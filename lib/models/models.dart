@@ -20,6 +20,7 @@ class Notes {
     required this.colorRed,
     required this.colorBlue,
     required this.colorGreen,
+    required this.image,
   });
 
   @HiveField(0)
@@ -54,6 +55,8 @@ class Notes {
   int? colorGreen;
   @HiveField(14)
   int? colorBlue;
+  @HiveField(15)
+  String? image;
 }
 
 @HiveType(typeId: 1)
@@ -64,4 +67,21 @@ class Categories {
 
   @HiveField(0)
   String? name;
+}
+
+@HiveType(typeId: 2)
+class Birthdays {
+  Birthdays({
+    required this.name,
+    required this.number,
+    required this.date,
+  });
+  @HiveField(0)
+  String? name;
+
+  @HiveField(1)
+  DateTime? date;
+
+  @HiveField(2)
+  String? number;
 }

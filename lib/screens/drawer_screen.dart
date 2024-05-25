@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:daily_tasks/models/notification_model.dart';
+import 'package:daily_tasks/screens/add_birthday_screen.dart';
 import 'package:daily_tasks/screens/add_category_screen.dart';
-import 'package:daily_tasks/screens/add_note_screen.dart';
+import 'package:daily_tasks/screens/add_task_screen.dart';
+import 'package:daily_tasks/screens/go_premium_screen.dart';
 import 'package:daily_tasks/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,6 +50,7 @@ class _DrawerWidgetState extends State<DrawerWidget>
   String showImg = '';
   String showName = '';
   String showNumber = '';
+  bool purchase = false;
 
   getProfile() async {
     SharedPreferences prefProfileImage = await SharedPreferences.getInstance();
@@ -134,9 +138,18 @@ class _DrawerWidgetState extends State<DrawerWidget>
               icon: Icons.bar_chart_rounded,
             ),
             DrawerListTile(
-              func: () {},
-              text: 'Go Premium',
-              icon: Icons.workspace_premium,
+              func: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return const GoPremmium();
+                    },
+                  ),
+                );
+              },
+              text: 'Premium V.',
+              icon: Icons.beach_access_rounded,
             ),
             DrawerListTile(
               func: () {
@@ -153,7 +166,37 @@ class _DrawerWidgetState extends State<DrawerWidget>
               icon: Icons.category_outlined,
             ),
             DrawerListTile(
-              func: () {},
+              func: () async {
+                SharedPreferences isPerchased =
+                    await SharedPreferences.getInstance();
+                purchase = isPerchased.getBool('purchase')!;
+                if (!purchase == false) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      behavior: SnackBarBehavior.fixed,
+                      duration: Duration(
+                        milliseconds: 2500,
+                      ),
+                      content: Text('You are not a permium contact'),
+                    ),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return const AddBirthday();
+                      },
+                    ),
+                  );
+                }
+              },
+              text: 'Add Birthday',
+              icon: Icons.cake_sharp,
+            ),
+            const DrawerListTile(
+              func: scheduleDailyNotification,
               text: 'Language',
               icon: Icons.language_rounded,
             ),
@@ -198,7 +241,5 @@ class _DrawerWidgetState extends State<DrawerWidget>
 }
 
 bool isExpanded = false;
-bool isSelected = false;
 
 //todo vasl kardan contacts
-//todo share app in invite friends

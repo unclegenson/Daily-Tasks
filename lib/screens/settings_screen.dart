@@ -1,12 +1,12 @@
 import 'package:daily_tasks/main.dart';
 import 'package:daily_tasks/models/models.dart';
-import 'package:daily_tasks/screens/add_note_screen.dart';
 import 'package:daily_tasks/screens/edit_profile_screens.dart';
 import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -15,6 +15,7 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
+bool purchase = false;
 bool reminder = false;
 
 class _SettingsScreenState extends State<SettingsScreen> {
@@ -60,11 +61,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const SettingsCategoryWidget(text: 'Profile Settings'),
             Settingbutton(
               size: size,
               icon: Icons.person,
@@ -83,13 +83,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 );
               },
             ),
-            const Divider(
-              thickness: 0.7,
-              color: Colors.white70,
-              indent: 20,
-              endIndent: 20,
-            ),
-            const SettingsCategoryWidget(text: 'App Style'),
             Settingbutton(
               size: size,
               icon: Icons.color_lens_outlined,
@@ -114,30 +107,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
               text: 'Font Weight',
               func: () {},
             ),
-            const Divider(
-              thickness: 0.7,
-              color: Colors.white70,
-              indent: 20,
-              endIndent: 20,
-            ),
-            const SettingsCategoryWidget(text: 'General Settings'),
             Settingbutton(
               size: size,
               text: reminder ? 'Reminder On' : 'Reminder Off',
               icon: reminder
                   ? Icons.toggle_on_outlined
                   : Icons.toggle_off_outlined,
-              func: () {
+              func: () async {
+                SharedPreferences isPerchased =
+                    await SharedPreferences.getInstance();
+                purchase = isPerchased.getBool('purchase')!;
+
                 setState(() {
-                  reminder = !reminder;
+                  if (purchase == true) {
+                    reminder = !reminder;
+                    //todo: reminder relate to purchase key pref
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        behavior: SnackBarBehavior.fixed,
+                        duration: Duration(
+                          milliseconds: 2500,
+                        ),
+                        content: Text('You are not a permium contact'),
+                      ),
+                    );
+                  }
                 });
               },
-            ),
-            Settingbutton(
-              size: size,
-              text: 'Show Date in tasks',
-              func: () {},
-              icon: Icons.edit_calendar_rounded,
             ),
             Settingbutton(
               icon: Icons.delete,
@@ -163,6 +160,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 );
               },
             ),
+            //todo: do something for here
+            SizedBox(
+              height: 260,
+            )
           ],
         ),
       ),
@@ -174,8 +175,11 @@ class SettingsCategoryWidget extends StatelessWidget {
   const SettingsCategoryWidget({
     super.key,
     required this.text,
+    required this.color,
   });
+
   final String text;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -185,16 +189,13 @@ class SettingsCategoryWidget extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Text(
             text,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: color,
               fontSize: 16,
-              fontWeight: FontWeight.w200,
+              fontWeight: FontWeight.w300,
             ),
           ),
         ),
-        const SizedBox(
-          height: 10,
-        )
       ],
     );
   }
@@ -218,32 +219,16 @@ class Settingbutton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: size.width,
-      height: 50,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: selectedColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+      height: 45,
+      child: ListTile(
+        visualDensity: VisualDensity(vertical: -4),
+        onTap: func,
+        title: Text(
+          text,
+          style: const TextStyle(
+              fontSize: 18, color: Colors.white, fontWeight: FontWeight.w300),
         ),
-        onPressed: func,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              text,
-              style: const TextStyle(fontSize: 18, color: Colors.black),
-            ),
-            const SizedBox(
-              width: 8,
-            ),
-            Icon(
-              icon,
-              size: 24,
-              color: Colors.black,
-            )
-          ],
-        ),
+        leading: Icon(icon, size: 22, color: Colors.white),
       ),
     );
   }

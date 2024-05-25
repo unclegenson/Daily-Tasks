@@ -9,14 +9,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 String profileImage = '';
 String profileName = '';
 String profileNumber = '';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(NotesAdapter());
   Hive.registerAdapter(CategoriesAdapter());
+  Hive.registerAdapter(BirthdaysAdapter());
 
   await Hive.openBox<Notes>('notesBox');
   await Hive.openBox<Categories>('categoryBox');
+  await Hive.openBox<Birthdays>('birthdayBox');
 
   runApp(const App());
 }
@@ -29,11 +32,32 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  checkEnterForFirstTime() async {
+    SharedPreferences isActivePref = await SharedPreferences.getInstance();
+    if (isActivePref.getBool('isActive') == null) {
+      setProfileData();
+      // scheduleDailyNotification();
+    } else {
+      getProfile();
+    }
+  }
+
   @override
   void initState() {
-    // setProfileData();
-    getProfile();
+    checkEnterForFirstTime();
     super.initState();
+  }
+
+  getProfile() async {
+    SharedPreferences prefProfileImage = await SharedPreferences.getInstance();
+    SharedPreferences prefProfileName = await SharedPreferences.getInstance();
+    SharedPreferences prefProfileNumber = await SharedPreferences.getInstance();
+
+    setState(() {
+      profileImage = prefProfileImage.getString('profileImage')!;
+      profileName = prefProfileName.getString('profileName')!;
+      profileNumber = prefProfileNumber.getString('profileNumber')!;
+    });
   }
 
   setProfileData() async {
@@ -72,18 +96,6 @@ class _AppState extends State<App> {
         ),
       ),
     );
-  }
-
-  getProfile() async {
-    SharedPreferences prefProfileImage = await SharedPreferences.getInstance();
-    SharedPreferences prefProfileName = await SharedPreferences.getInstance();
-    SharedPreferences prefProfileNumber = await SharedPreferences.getInstance();
-
-    setState(() {
-      profileImage = prefProfileImage.getString('profileImage')!;
-      profileName = prefProfileName.getString('profileName')!;
-      profileNumber = prefProfileNumber.getString('profileNumber')!;
-    });
   }
 }
 

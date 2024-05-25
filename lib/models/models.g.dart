@@ -32,13 +32,14 @@ class NotesAdapter extends TypeAdapter<Notes> {
       colorRed: fields[12] as int?,
       colorBlue: fields[14] as int?,
       colorGreen: fields[13] as int?,
+      image: fields[15] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Notes obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -68,7 +69,9 @@ class NotesAdapter extends TypeAdapter<Notes> {
       ..writeByte(13)
       ..write(obj.colorGreen)
       ..writeByte(14)
-      ..write(obj.colorBlue);
+      ..write(obj.colorBlue)
+      ..writeByte(15)
+      ..write(obj.image);
   }
 
   @override
@@ -112,6 +115,46 @@ class CategoriesAdapter extends TypeAdapter<Categories> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is CategoriesAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class BirthdaysAdapter extends TypeAdapter<Birthdays> {
+  @override
+  final int typeId = 2;
+
+  @override
+  Birthdays read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Birthdays(
+      name: fields[0] as String?,
+      number: fields[2] as String?,
+      date: fields[1] as DateTime?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Birthdays obj) {
+    writer
+      ..writeByte(3)
+      ..writeByte(0)
+      ..write(obj.name)
+      ..writeByte(1)
+      ..write(obj.date)
+      ..writeByte(2)
+      ..write(obj.number);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BirthdaysAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
