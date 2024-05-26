@@ -213,12 +213,6 @@ class _GoPremmiumState extends State<GoPremmium> {
                           }
                         });
                         //todo: setbool pref with purchase key
-                        ZarinPal().startPayment(_paymentRequest,
-                            (int? status, String? paymentGatewayUri) {
-                          if (status == 100)
-                            _paymentUrl =
-                                paymentGatewayUri; // launch URL in browser
-                        });
                       },
                       child: const Text(
                         'Purchase',

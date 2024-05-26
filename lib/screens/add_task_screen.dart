@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
@@ -198,7 +199,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           mainTitleText = widget.note.title;
           mainDescriptionText = widget.note.description;
           selectedCategory = widget.note.category;
-          _image = File(widget.note.image!);
+          if (widget.note.image != null) {
+            _image = File(widget.note.image!);
+          }
         });
       }
       selectedColor = anythingToShow
@@ -416,67 +419,89 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                           ),
                         );
                       } else {
-                        anythingToShow
-                            ? await Hive.box<Notes>('notesBox').putAt(
-                                int.parse(widget.note.id!),
-                                Notes(
-                                  image: imageString,
-                                  category: selectedCategory,
-                                  colorAlpha: selectedColor?.alpha,
-                                  colorRed: selectedColor?.red,
-                                  colorBlue: selectedColor?.blue,
-                                  colorGreen: selectedColor?.green,
-                                  day: time.day,
-                                  description: mainDescriptionText,
-                                  done: false,
-                                  hour: time.hour,
-                                  id: time.toString(),
-                                  minute: time.minute,
-                                  month: time.month,
-                                  title: mainTitleText,
-                                  weekDay: time.weekday,
-                                  year: time.year,
-                                ),
-                              )
-                            : await Hive.box<Notes>('notesBox').add(
-                                Notes(
-                                  image: imageString,
-                                  category: selectedCategory,
-                                  colorAlpha: selectedColor?.alpha,
-                                  colorRed: selectedColor?.red,
-                                  colorBlue: selectedColor?.blue,
-                                  colorGreen: selectedColor?.green,
-                                  day: time.day,
-                                  description: mainDescriptionText,
-                                  done: false,
-                                  hour: time.hour,
-                                  id: time.toString(),
-                                  minute: time.minute,
-                                  month: time.month,
-                                  title: mainTitleText,
-                                  weekDay: time.weekday,
-                                  year: time.year,
-                                ),
-                              );
+                        if (anythingToShow) {
+                          await Hive.box<Notes>('notesBox').putAt(
+                            int.parse(widget.note.id!),
+                            Notes(
+                              image: imageString,
+                              category: selectedCategory,
+                              colorAlpha: selectedColor?.alpha,
+                              colorRed: selectedColor?.red,
+                              colorBlue: selectedColor?.blue,
+                              colorGreen: selectedColor?.green,
+                              day: time.day,
+                              description: mainDescriptionText,
+                              done: false,
+                              hour: time.hour,
+                              id: time.toString(),
+                              minute: time.minute,
+                              month: time.month,
+                              title: mainTitleText,
+                              weekDay: time.weekday,
+                              year: time.year,
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              duration: Duration(milliseconds: 1500),
+                              behavior: SnackBarBehavior.fixed,
+                              content: Text('Task Edited!'),
+                            ),
+                          );
+                        } else {
+                          await Hive.box<Notes>('notesBox').add(
+                            Notes(
+                              image: imageString,
+                              category: selectedCategory,
+                              colorAlpha: selectedColor?.alpha,
+                              colorRed: selectedColor?.red,
+                              colorBlue: selectedColor?.blue,
+                              colorGreen: selectedColor?.green,
+                              day: time.day,
+                              description: mainDescriptionText,
+                              done: false,
+                              hour: time.hour,
+                              id: time.toString(),
+                              minute: time.minute,
+                              month: time.month,
+                              title: mainTitleText,
+                              weekDay: time.weekday,
+                              year: time.year,
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              duration: Duration(milliseconds: 1500),
+                              behavior: SnackBarBehavior.fixed,
+                              content: Text('Task Added!'),
+                            ),
+                          );
+                        }
+
+                        Navigator.pop(context);
+                        //!send notif here ->
+                        AwesomeNotifications().createNotification(
+                          schedule: NotificationCalendar(
+                            day: time.day,
+                            hour: time.hour,
+                            minute: time.minute,
+                            month: time.month,
+                            year: time.year,
+                          ),
+                          content: NotificationContent(
+                            category: NotificationCategory.Reminder,
+                            wakeUpScreen: true,
+                            color: selectedColor,
+                            id: 10,
+                            channelKey: 'chanel',
+                            title: 'Daily Tasks',
+                            body: 'time of $mainTitleText is now!',
+                          ),
+                        );
+                        //! -------------------
                         selectedCategory = null;
                         mainDescriptionText = null;
                         mainTitleText = null;
-                        anythingToShow
-                            ? ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  duration: Duration(milliseconds: 1500),
-                                  behavior: SnackBarBehavior.fixed,
-                                  content: Text('Task Edited!'),
-                                ),
-                              )
-                            : ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  duration: Duration(milliseconds: 1500),
-                                  behavior: SnackBarBehavior.fixed,
-                                  content: Text('Task Added!'),
-                                ),
-                              );
-                        Navigator.pop(context);
                       }
                     },
                     child: AnimatedContainer(

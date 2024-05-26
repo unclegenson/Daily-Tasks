@@ -1,3 +1,4 @@
+import 'package:daily_tasks/models/notification_model.dart';
 import 'package:daily_tasks/screens/edit_profile_screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,12 +6,37 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:daily_tasks/models/models.dart';
 import 'screens/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 String profileImage = '';
 String profileName = '';
 String profileNumber = '';
 
 void main() async {
+  await AwesomeNotifications().initialize(
+    null,
+    [
+      NotificationChannel(
+        channelKey: 'chanel',
+        channelName: 'notif name',
+        channelDescription: 'daily tasks notif',
+        channelGroupKey: 'basic_chanel_group',
+      )
+    ],
+    channelGroups: [
+      NotificationChannelGroup(
+        channelGroupKey: 'basic_chanel_group',
+        channelGroupName: 'basic group',
+      )
+    ],
+  );
+
+  bool isAllowToSendNotification =
+      await AwesomeNotifications().isNotificationAllowed();
+  if (isAllowToSendNotification) {
+    AwesomeNotifications().requestPermissionToSendNotifications();
+  }
+
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(NotesAdapter());
@@ -45,6 +71,15 @@ class _AppState extends State<App> {
   @override
   void initState() {
     checkEnterForFirstTime();
+    AwesomeNotifications().setListeners(
+      onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+      onDismissActionReceivedMethod:
+          NotificationController.onDismissActionReceivedMethod,
+      onNotificationCreatedMethod:
+          NotificationController.onNotificationCreatedMethod,
+      onNotificationDisplayedMethod:
+          NotificationController.onNotificationDisplayedMethod,
+    );
     super.initState();
   }
 

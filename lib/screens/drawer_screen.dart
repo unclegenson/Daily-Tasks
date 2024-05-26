@@ -195,8 +195,8 @@ class _DrawerWidgetState extends State<DrawerWidget>
               text: 'Add Birthday',
               icon: Icons.cake_sharp,
             ),
-            const DrawerListTile(
-              func: scheduleDailyNotification,
+            DrawerListTile(
+              func: () {},
               text: 'Language',
               icon: Icons.language_rounded,
             ),
