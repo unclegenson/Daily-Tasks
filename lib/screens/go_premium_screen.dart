@@ -15,8 +15,11 @@ class GoPremmium extends StatefulWidget {
 
 List premiumOptions = [
   'Notifications',
-  'Birthday messages',
-  'Attach image for each task'
+  'Birthday messages - sms',
+  'Attach image for each task',
+  'voice tasks',
+  'sharing review table',
+  'special themes',
 ];
 
 class _GoPremmiumState extends State<GoPremmium> {
@@ -107,8 +110,9 @@ class _GoPremmiumState extends State<GoPremmium> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SettingsCategoryWidget(
-                                color: Colors.white,
-                                text: 'Premium version price :'),
+                              color: Colors.white,
+                              text: 'Premium version price :',
+                            ),
                             SizedBox(
                               height: 4,
                             ),
@@ -127,7 +131,7 @@ class _GoPremmiumState extends State<GoPremmium> {
                             Row(
                               children: [
                                 Text(
-                                  '47.000',
+                                  '69.000',
                                   style: TextStyle(
                                     fontSize: 24,
                                     color: Colors.white,
@@ -143,7 +147,7 @@ class _GoPremmiumState extends State<GoPremmium> {
                               ],
                             ),
                             Text(
-                              '68.000',
+                              '83.000',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.white,
@@ -172,9 +176,10 @@ class _GoPremmiumState extends State<GoPremmium> {
 
                         _paymentRequest.setIsSandBox(true);
                         _paymentRequest.setMerchantID("Zarinpal MerchantID");
-                        _paymentRequest.setAmount(1000); //integar Amount
+                        _paymentRequest.setAmount(69000); //integar Amount
                         _paymentRequest.setCallbackURL("return://myZarinPal");
-                        _paymentRequest.setDescription("Payment Description");
+                        _paymentRequest
+                            .setDescription("Daily Tasks Premium Version");
 
                         String? _paymentUrl;
 

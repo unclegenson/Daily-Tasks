@@ -42,6 +42,23 @@ class _CalenderWidgetState extends State<CalenderWidget> {
           fontWeight: FontWeight.bold,
           fontSize: 14,
         ),
+        onSubmit: (p0) {
+          var day = DateTime(time.year, time.month, time.day)
+              .difference(DateTime.now())
+              .inDays;
+          int hour = DateTime(time.year, time.month, time.day, time.hour).hour -
+              DateTime.now().hour;
+          int minute =
+              DateTime(time.year, time.month, time.day, time.hour, time.minute)
+                      .minute -
+                  DateTime.now().minute;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  '${day != 0 ? '$day days' : ''} ${hour.toString().length > 1 ? '$hour' : '0$hour'} hours ${minute.toString().length > 1 ? '$minute' : '0$minute'} minutes from now!'),
+            ),
+          );
+        },
         onChange: (p0) {
           setState(() {
             time = p0;

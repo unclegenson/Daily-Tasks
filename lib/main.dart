@@ -14,6 +14,7 @@ String profileNumber = '';
 
 void main() async {
   await AwesomeNotifications().initialize(
+    debug: true,
     null,
     [
       NotificationChannel(
@@ -75,6 +76,7 @@ class _AppState extends State<App> {
       onActionReceivedMethod: NotificationController.onActionReceivedMethod,
       onDismissActionReceivedMethod:
           NotificationController.onDismissActionReceivedMethod,
+      //todo: open the birthday screen to type a text message to whom want to message
       onNotificationCreatedMethod:
           NotificationController.onNotificationCreatedMethod,
       onNotificationDisplayedMethod:
@@ -118,7 +120,7 @@ class _AppState extends State<App> {
       value: const SystemUiOverlayStyle(systemNavigationBarColor: Colors.black),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'tasks',
+        title: 'Daily Tasks',
         home: FutureBuilder(
           future: isActive(),
           builder: (context, snapshot) {

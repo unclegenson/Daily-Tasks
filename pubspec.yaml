@@ -49,6 +49,9 @@ dependencies:
   shared_preferences: ^2.2.3
   zarinpal: ^1.0.5+1
   awesome_notifications: ^0.9.3+1
+  flutter_sound: ^9.4.11
+  permission_handler: ^11.3.1
+  audioplayers: ^6.0.0
 
 dev_dependencies:
   flutter_test:

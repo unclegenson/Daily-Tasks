@@ -26,6 +26,17 @@ class NotificationController {
   @pragma("vm:entry-point")
   static Future<void> onActionReceivedMethod(
       ReceivedAction receivedAction) async {
-    // Your code goes here
+    if (receivedAction.actionType == ActionType.SilentAction) {
+      if (receivedAction.payload != null) {
+        //////////////////////////////
+        print(receivedAction.payload!["payload"]!);
+        ////////////////////////////
+      }
+    } else {
+      if (receivedAction.payload != null) {
+        ////////////////////////
+        print(receivedAction.payload!["payload"]!);
+      }
+    }
   }
 }

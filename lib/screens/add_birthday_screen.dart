@@ -10,6 +10,7 @@ import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddBirthday extends StatefulWidget {
   const AddBirthday({super.key});
@@ -46,7 +47,7 @@ class _AddBirthdayState extends State<AddBirthday> {
     newPhone = '';
 
     birthDayList.clear();
-
+    nameList.clear();
     Hive.box<Birthdays>('birthdayBox').values.forEach((element) {
       nameList.add(element.name);
       numberList.add(element.number);
@@ -54,6 +55,36 @@ class _AddBirthdayState extends State<AddBirthday> {
     });
 
     super.initState();
+  }
+
+  void openDateTimePicker2(BuildContext context) {
+    BottomPicker.date(
+      pickerTitle: Text(
+        'Choose Birthday Date',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+          color: selectedColor,
+        ),
+      ),
+      gradientColors: [selectedColor2!, Colors.blue],
+      backgroundColor: Colors.black87,
+      closeIconColor: selectedColor2!,
+      initialDateTime: DateTime(DateTime.now().year),
+      maxDateTime: DateTime(DateTime.now().year),
+      minDateTime: DateTime(1900),
+      pickerTextStyle: const TextStyle(
+        color: Colors.blue,
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+      ),
+      onChange: (p0) {
+        setState(() {
+          time = p0;
+          newBirthdayDate = time;
+        });
+      },
+    ).show(context);
   }
 
   @override
@@ -136,7 +167,8 @@ class _AddBirthdayState extends State<AddBirthday> {
                           style: const TextStyle(
                               color: Colors.white, fontWeight: FontWeight.w300),
                         ),
-                        subtitle: Text(birthDayList[index].toString()),
+                        subtitle: Text(
+                            birthDayList[index].toString().substring(0, 10)),
                         leading: const Icon(Icons.circle),
                       );
                     },
@@ -176,7 +208,40 @@ class _AddBirthdayState extends State<AddBirthday> {
                         : 'Edit birthday date :',
                   ),
                 ),
-                const CalenderWidgetBirthday(),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 1500),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  width: size.width - 56,
+                  height: 55,
+                  child: InkWell(
+                    onTap: () {
+                      return openDateTimePicker2(context);
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          '${time.day.toString()}.${time.month.toString()}.${time.year.toString()}',
+                          style: const TextStyle(
+                              fontSize: 20, color: Colors.white70),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        const Divider(
+                          height: 0,
+                          color: Colors.white54,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
                   child: SettingsCategoryWidget(
@@ -210,7 +275,7 @@ class _AddBirthdayState extends State<AddBirthday> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (wantToChange) {
                         if (newName != '') {
                           setState(() {
@@ -229,6 +294,33 @@ class _AddBirthdayState extends State<AddBirthday> {
                               date: newBirthdayDate,
                             ),
                           );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'We will let you know at ${time}!',
+                              ),
+                              duration: Duration(milliseconds: 1800),
+                            ),
+                          );
+
+                          await AwesomeNotifications().createNotification(
+                            schedule: NotificationCalendar(
+                              day: time.day,
+                              month: time.month,
+                              repeats: true,
+                            ),
+                            content: NotificationContent(
+                              category: NotificationCategory.Reminder,
+                              wakeUpScreen: true,
+                              color: selectedColor,
+                              id: 10,
+                              channelKey: 'chanel',
+                              title: 'Daily Tasks',
+                              body:
+                                  "$nameCon's birthday is next week on ${time.day}!",
+                            ),
+                          );
+
                           Navigator.pop(context);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -236,7 +328,7 @@ class _AddBirthdayState extends State<AddBirthday> {
                               content: Text(
                                 'Edit the birthday items please!',
                               ),
-                              duration: Duration(milliseconds: 800),
+                              duration: Duration(milliseconds: 1800),
                             ),
                           );
                         }
@@ -254,6 +346,33 @@ class _AddBirthdayState extends State<AddBirthday> {
                               date: newBirthdayDate,
                             ),
                           );
+
+                          await AwesomeNotifications().createNotification(
+                            schedule: NotificationCalendar(
+                              day: time.day,
+                              month: time.month,
+                              repeats: true,
+                            ),
+                            content: NotificationContent(
+                              category: NotificationCategory.Reminder,
+                              wakeUpScreen: true,
+                              color: selectedColor,
+                              id: 10,
+                              channelKey: 'chanel',
+                              title: 'Daily Tasks',
+                              body:
+                                  "$nameCon's birthday is next week on ${time.day}!",
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'We will let you know at ${time}!',
+                              ),
+                              duration: Duration(milliseconds: 1800),
+                            ),
+                          );
+
                           Navigator.pop(context);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -261,7 +380,7 @@ class _AddBirthdayState extends State<AddBirthday> {
                               content: Text(
                                 'Nothing added!',
                               ),
-                              duration: Duration(milliseconds: 800),
+                              duration: Duration(milliseconds: 1800),
                             ),
                           );
                         }
@@ -276,76 +395,6 @@ class _AddBirthdayState extends State<AddBirthday> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class CalenderWidgetBirthday extends StatefulWidget {
-  const CalenderWidgetBirthday({super.key});
-
-  @override
-  State<CalenderWidgetBirthday> createState() => _CalenderWidgetBirthdayState();
-}
-
-class _CalenderWidgetBirthdayState extends State<CalenderWidgetBirthday> {
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
-    void openDateTimePicker2(BuildContext context) {
-      BottomPicker.date(
-        pickerTitle: Text(
-          'Choose Note Date',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: selectedColor,
-          ),
-        ),
-        gradientColors: [selectedColor2!, Colors.blue],
-        backgroundColor: Colors.black87,
-        closeIconColor: selectedColor2!,
-        initialDateTime: DateTime(DateTime.now().year),
-        maxDateTime: DateTime(DateTime.now().year),
-        minDateTime: DateTime(1900),
-        pickerTextStyle: const TextStyle(
-          color: Colors.blue,
-          fontWeight: FontWeight.bold,
-          fontSize: 14,
-        ),
-        onChange: (p0) {
-          setState(() {
-            time = p0;
-          });
-        },
-      ).show(context);
-    }
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 1500),
-      decoration: BoxDecoration(
-        color: selectedColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      width: size.width - 56,
-      height: 50,
-      child: InkWell(
-        onTap: () {
-          return openDateTimePicker2(context);
-        },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '${time.day.toString()} - ${time.month.toString()} - ${time.year.toString()}',
-              style: const TextStyle(fontSize: 20, color: Colors.white70),
-            ),
-            const Divider(
-              color: Colors.white54,
-            ),
-          ],
         ),
       ),
     );

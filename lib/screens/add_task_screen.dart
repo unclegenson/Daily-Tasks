@@ -1,20 +1,30 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:audioplayers/audioplayers.dart';
 
+import 'package:audioplayers/src/source.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:flutter_sound/public/flutter_sound_player.dart' as h;
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
 import 'package:daily_tasks/models/models.dart';
 import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/add_note_widget.dart';
 import 'package:image_picker/image_picker.dart';
 
 List categoryItems = [];
 
+final recorder = FlutterSoundRecorder();
+final audioPlayer = AudioPlayer();
+bool isPlaying = false;
+Duration durationOfAudio = Duration.zero;
+Duration position = Duration.zero;
 List colorItems = const [
   Color.fromARGB(255, 137, 207, 240),
   Color.fromARGB(255, 255, 229, 180),
@@ -30,6 +40,7 @@ List colorItems = const [
 ];
 
 String? selectedCategory;
+bool micOn = false;
 
 class AddNoteScreen extends StatefulWidget {
   const AddNoteScreen({super.key, required this.note});
@@ -42,6 +53,7 @@ class AddNoteScreen extends StatefulWidget {
 Color? selectedColor;
 Color? _shadeColor = Colors.blue[800];
 bool anythingToShow = false;
+String? pathOfVoice;
 
 class _AddNoteScreenState extends State<AddNoteScreen> {
   void _openDialog(String title, Widget content) {
@@ -181,8 +193,39 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     );
   }
 
+  Future<void> initRecorder() async {
+    final status = await Permission.microphone.request();
+
+    await recorder.openRecorder();
+    recorder.setSubscriptionDuration(Duration(milliseconds: 500));
+  }
+
+  Future setAudio() async {
+    audioPlayer.setSourceDeviceFile(pathOfVoice!);
+  }
+
   @override
   void initState() {
+    audioPlayer.onPlayerStateChanged.listen(
+      (event) {
+        setState(() {
+          isPlaying = event == h.PlayerState.isPlaying;
+        });
+      },
+    );
+    audioPlayer.onDurationChanged.listen((newDuration) {
+      setState(() {
+        durationOfAudio = newDuration;
+      });
+    });
+    audioPlayer.onPositionChanged.listen((newPosition) {
+      setState(() {
+        position = newPosition;
+      });
+    });
+
+    initRecorder();
+
     setState(() {
       categoryItems.clear();
 
@@ -210,6 +253,19 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           : colorItems[Random().nextInt(colorItems.length)];
     });
     super.initState();
+  }
+
+  Future record() async {
+    await recorder.startRecorder(toFile: 'audio');
+  }
+
+  Future stop() async {
+    final path = await recorder.stopRecorder();
+    setState(() {
+      pathOfVoice = path;
+      print(pathOfVoice);
+    });
+    audioPlayer.setSourceDeviceFile(pathOfVoice!);
   }
 
   @override
@@ -252,81 +308,228 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           titleSpacing: 10,
           elevation: 0,
           toolbarHeight: 70,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(
+                right: 8,
+              ),
+              child: Container(
+                width: 55,
+                height: 55,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.grey[800],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: InkWell(
+                    onTap: () {
+                      if (micOn == true) {
+                        setState(() {
+                          micOn = false;
+                        });
+                      } else {
+                        setState(() {
+                          micOn = true;
+                        });
+                      }
+                    },
+                    child: Icon(
+                      !micOn ? Icons.mic : Icons.mic_off_rounded,
+                      size: 30,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(15.0),
             child: SizedBox(
               width: size.width,
-              height: size.height - 130,
+              height: size.height - 130, //todo: fix this 130
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  TitleInputWidget(
-                    size: size,
-                    titleText: anythingToShow ? widget.note.title! : '',
-                  ),
-                  DropdownButtonFormField2(
-                    style: const TextStyle(color: Colors.white),
-                    isExpanded: true,
-                    decoration: InputDecoration(
-                      iconColor: Colors.white,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    hint: Text(
-                      anythingToShow ? widget.note.category! : 'Category',
-                      style: const TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    items: categoryItems
-                        .map((item) => DropdownMenuItem<String>(
-                              value: item,
-                              child: Text(
-                                item,
-                                style: const TextStyle(color: Colors.white),
+                  micOn == false
+                      ? Column(
+                          children: [
+                            TitleInputWidget(
+                              size: size,
+                              titleText:
+                                  anythingToShow ? widget.note.title! : '',
+                            ),
+                            const SizedBox(
+                              height: 14,
+                            ),
+                            DropdownButtonFormField2(
+                              style: const TextStyle(color: Colors.white),
+                              isExpanded: true,
+                              decoration: InputDecoration(
+                                iconColor: Colors.white,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                               ),
-                            ))
-                        .toList(),
-                    validator: (value) {
-                      if (value == null) {
-                        return 'Please select a category.';
-                      }
-                      return null;
-                    },
-                    onChanged: (value) {
-                      setState(() {
-                        selectedCategory = value.toString();
-                      });
-                    },
-                    onSaved: (value) {},
-                    buttonStyleData: const ButtonStyleData(
-                      padding: EdgeInsets.only(right: 8),
-                    ),
-                    iconStyleData: const IconStyleData(
-                      icon: Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        color: Colors.white,
-                      ),
-                      iconSize: 24,
-                    ),
-                    dropdownStyleData: DropdownStyleData(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[800],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    menuItemStyleData: const MenuItemStyleData(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                    ),
-                  ),
-                  DescriptionInputWidget(
-                    size: size,
-                    descriptionText: widget.note.description!,
-                  ),
+                              hint: Text(
+                                anythingToShow
+                                    ? widget.note.category!
+                                    : ' Category',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                              items: categoryItems
+                                  .map((item) => DropdownMenuItem<String>(
+                                        value: item,
+                                        child: Text(
+                                          item,
+                                          style: const TextStyle(
+                                              color: Colors.white),
+                                        ),
+                                      ))
+                                  .toList(),
+                              validator: (value) {
+                                if (value == null) {
+                                  return 'Please select a category.';
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedCategory = value.toString();
+                                });
+                              },
+                              onSaved: (value) {},
+                              buttonStyleData: const ButtonStyleData(
+                                padding: EdgeInsets.only(right: 8),
+                              ),
+                              iconStyleData: const IconStyleData(
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down_rounded,
+                                  color: Colors.white,
+                                ),
+                                iconSize: 24,
+                              ),
+                              dropdownStyleData: DropdownStyleData(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[800],
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              menuItemStyleData: const MenuItemStyleData(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 14,
+                            ),
+                            DescriptionInputWidget(
+                              size: size,
+                              descriptionText: widget.note.description!,
+                            ),
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            StreamBuilder(
+                              stream: recorder.onProgress,
+                              builder: (context, snapshot) {
+                                final duration = snapshot.hasData
+                                    ? snapshot.data!.duration
+                                    : Duration.zero;
+
+                                String twoDigits(int n) =>
+                                    n.toString().padLeft(2);
+                                final twoDigitMinutes =
+                                    twoDigits(duration.inMinutes.remainder(60));
+                                final twoDigitSecons =
+                                    twoDigits(duration.inSeconds.remainder(60));
+
+                                return Text(
+                                  '$twoDigitMinutes :$twoDigitSecons',
+                                  style: const TextStyle(color: Colors.white),
+                                );
+                              },
+                            ),
+                            IconButton(
+                              onPressed: () async {
+                                if (recorder.isRecording) {
+                                  await stop();
+                                } else {
+                                  await record();
+                                }
+                              },
+                              icon: const Icon(
+                                Icons.mic,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Slider(
+                              value: position.inSeconds.toDouble(),
+                              onChanged: (value) async {
+                                final position =
+                                    Duration(seconds: value.toInt());
+                                await audioPlayer.seek(position);
+                              },
+                              min: 0,
+                              max: durationOfAudio.inSeconds.toDouble(),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  position.toString(),
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                Text(
+                                  durationOfAudio
+                                      .compareTo(position)
+                                      .toString(),
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                // if (isPlaying) {
+                                //   setState(() {
+                                //     isPlaying != isPlaying;
+                                //   });
+                                // } else {
+                                //   isPlaying != isPlaying;
+
+                                //   // audioPlayer.resume();
+                                // }
+                                setState(() {
+                                  if (!isPlaying) {
+                                    isPlaying = true;
+                                    setAudio();
+                                    audioPlayer.resume();
+                                  } else {
+                                    isPlaying = false;
+                                    audioPlayer.pause();
+                                  }
+                                });
+                              },
+                              icon: isPlaying
+                                  ? const Icon(
+                                      Icons.pause,
+                                      color: Colors.white,
+                                    )
+                                  : const Icon(
+                                      Icons.play_arrow,
+                                      color: Colors.white,
+                                    ),
+                            )
+                          ],
+                        ),
                   GestureDetector(
                     onTap: () {
                       showOptions();
@@ -484,7 +687,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                           schedule: NotificationCalendar(
                             day: time.day,
                             hour: time.hour,
-                            minute: time.minute,
+                            minute: time.minute - 1,
                             month: time.month,
                             year: time.year,
                           ),

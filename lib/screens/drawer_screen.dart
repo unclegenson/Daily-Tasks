@@ -8,6 +8,7 @@ import 'package:daily_tasks/screens/go_premium_screen.dart';
 import 'package:daily_tasks/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zarinpal/zarinpal.dart';
 import '../widgets/drawer_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -194,6 +195,53 @@ class _DrawerWidgetState extends State<DrawerWidget>
               },
               text: 'Add Birthday',
               icon: Icons.cake_sharp,
+            ),
+            DrawerListTile(
+              func: () {
+                PaymentRequest _paymentRequest = PaymentRequest();
+
+                _paymentRequest.setIsSandBox(true);
+                _paymentRequest.setMerchantID("Zarinpal MerchantID");
+                _paymentRequest.setAmount(69000); //integar Amount
+                _paymentRequest.setCallbackURL("return://myZarinPal");
+                _paymentRequest.setDescription("Daily Tasks Premium Version");
+
+                String? _paymentUrl;
+
+                ZarinPal().startPayment(_paymentRequest,
+                    (int? status, String? paymentGatewayUri) async {
+                  print(paymentGatewayUri);
+                  if (status == 100) {
+                    if (!await launchUrl(Uri.parse(paymentGatewayUri!))) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('error while routing to zarin pal'),
+                        ),
+                      );
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('some error in happened'),
+                      ),
+                    );
+                  }
+                });
+
+                ZarinPal().verificationPayment(
+                    "Status", "Authority Call back", _paymentRequest,
+                    (isPaymentSuccess, refID, paymentRequest) {
+                  if (isPaymentSuccess) {
+                    // Payment Is Success
+                    print("Success");
+                  } else {
+                    // Error Print Status
+                    print("Error");
+                  }
+                });
+              },
+              text: 'Buy me a coffee',
+              icon: Icons.coffee_rounded,
             ),
             DrawerListTile(
               func: () {},
