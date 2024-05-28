@@ -139,7 +139,7 @@ class _DescriptionInputWidgetState extends State<DescriptionInputWidget> {
             mainDescriptionText = value;
           });
         },
-        maxLines: 6,
+        maxLines: 3,
         style: const TextStyle(color: Colors.white),
         cursorColor: Colors.white,
         decoration: InputDecoration(

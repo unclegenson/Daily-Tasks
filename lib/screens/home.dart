@@ -241,6 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       builder: (context) {
                                         return AddNoteScreen(
                                           note: Notes(
+                                            voice: voiceList[index],
                                             image: boxImages[index],
                                             id: index.toString(),
                                             title: texts[index],
@@ -381,6 +382,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                     .putAt(
                                                                   index,
                                                                   Notes(
+                                                                    voice: voiceList[
+                                                                        index],
                                                                     image: boxImages[
                                                                         index],
                                                                     id: index
@@ -655,6 +658,7 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (context) {
                 return AddNoteScreen(
                   note: Notes(
+                    voice: '',
                     image: '',
                     category: '',
                     colorAlpha: 0,
@@ -703,13 +707,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  List voiceList = [];
+
   void textsListCreate() {
     descriptions.clear();
     texts.clear();
     dateTimes.clear();
     categories.clear();
+    voiceList.clear();
+
     containerColors.clear();
     boxImages.clear();
+
     Hive.box<Notes>('notesBox').values.forEach(
       (element) {
         if (!element.done!) {
@@ -719,6 +728,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'mounth': element.month,
             'year': element.year
           });
+          voiceList.add(element.voice);
           boxImages.add(element.image);
           texts.add(element.title);
           categories.add(element.category);

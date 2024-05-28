@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:ui';
 import 'package:audioplayers/audioplayers.dart';
 
-import 'package:audioplayers/src/source.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -41,6 +41,7 @@ List colorItems = const [
 
 String? selectedCategory;
 bool micOn = false;
+bool isRecording = false;
 
 class AddNoteScreen extends StatefulWidget {
   const AddNoteScreen({super.key, required this.note});
@@ -61,7 +62,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       context: context,
       builder: (_) {
         return AlertDialog(
-          backgroundColor: Colors.white38,
+          backgroundColor: Colors.white54,
           contentPadding: const EdgeInsets.all(18.0),
           title: Text(title),
           content: content,
@@ -159,7 +160,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   File? _image;
   String? imageString;
   final picker = ImagePicker();
-
+  String? voiceString;
   //Image Picker function to get image from gallery
   Future getImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -263,7 +264,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     final path = await recorder.stopRecorder();
     setState(() {
       pathOfVoice = path;
-      print(pathOfVoice);
+      voiceString = pathOfVoice;
     });
     audioPlayer.setSourceDeviceFile(pathOfVoice!);
   }
@@ -301,6 +302,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
             );
           }),
           backgroundColor: Colors.black87,
+          centerTitle: true,
           title: MyAppBarTitle(
             title: anythingToShow ? 'Edit Task' : 'Add Task',
             fontSize: 46,
@@ -323,15 +325,29 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: InkWell(
-                    onTap: () {
-                      if (micOn == true) {
-                        setState(() {
-                          micOn = false;
-                        });
+                    onTap: () async {
+                      SharedPreferences premium =
+                          await SharedPreferences.getInstance();
+                      if (premium.getBool('purchase')!) {
+                        //todo: ! here
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'You are not a Premium contact yet!',
+                            ),
+                            duration: Duration(milliseconds: 2500),
+                          ),
+                        );
                       } else {
-                        setState(() {
-                          micOn = true;
-                        });
+                        if (micOn == true) {
+                          setState(() {
+                            micOn = false;
+                          });
+                        } else {
+                          setState(() {
+                            micOn = true;
+                          });
+                        }
                       }
                     },
                     child: Icon(
@@ -438,6 +454,15 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                         )
                       : Column(
                           children: [
+                            Text(
+                              isRecording
+                                  ? 'Recording...'
+                                  : 'Click the button to start reording...',
+                              style: TextStyle(color: selectedColor),
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
                             StreamBuilder(
                               stream: recorder.onProgress,
                               builder: (context, snapshot) {
@@ -454,80 +479,186 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
                                 return Text(
                                   '$twoDigitMinutes :$twoDigitSecons',
-                                  style: const TextStyle(color: Colors.white),
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 26),
                                 );
                               },
                             ),
-                            IconButton(
-                              onPressed: () async {
-                                if (recorder.isRecording) {
-                                  await stop();
-                                } else {
-                                  await record();
-                                }
-                              },
-                              icon: const Icon(
-                                Icons.mic,
-                                color: Colors.white,
-                              ),
-                            ),
                             Slider(
-                              value: position.inSeconds.toDouble(),
+                              activeColor: selectedColor,
+                              divisions: 20,
+                              value: position.inMilliseconds.toDouble(),
                               onChanged: (value) async {
                                 final position =
                                     Duration(seconds: value.toInt());
                                 await audioPlayer.seek(position);
                               },
                               min: 0,
-                              max: durationOfAudio.inSeconds.toDouble(),
+                              max: durationOfAudio.inMilliseconds.toDouble(),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 22),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    position.inSeconds.toString(),
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  Text(
+                                    durationOfAudio.inSeconds.toString(),
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
                             ),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
-                                  position.toString(),
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                Text(
-                                  durationOfAudio
-                                      .compareTo(position)
-                                      .toString(),
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                // if (isPlaying) {
-                                //   setState(() {
-                                //     isPlaying != isPlaying;
-                                //   });
-                                // } else {
-                                //   isPlaying != isPlaying;
-
-                                //   // audioPlayer.resume();
-                                // }
-                                setState(() {
-                                  if (!isPlaying) {
-                                    isPlaying = true;
-                                    setAudio();
-                                    audioPlayer.resume();
-                                  } else {
-                                    isPlaying = false;
-                                    audioPlayer.pause();
-                                  }
-                                });
-                              },
-                              icon: isPlaying
-                                  ? const Icon(
-                                      Icons.pause,
-                                      color: Colors.white,
-                                    )
-                                  : const Icon(
-                                      Icons.play_arrow,
+                                IconButton(
+                                  onPressed: () async {
+                                    if (recorder.isRecording) {
+                                      await stop();
+                                      setState(() {
+                                        isRecording = false;
+                                      });
+                                    } else {
+                                      await record();
+                                      setState(() {
+                                        isRecording = true;
+                                      });
+                                    }
+                                  },
+                                  icon: Container(
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
                                       color: Colors.white,
                                     ),
-                            )
+                                    width: 40,
+                                    height: 40,
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
+                                      ),
+                                      width: 40,
+                                      height: 40,
+                                      child: !isRecording
+                                          ? const Icon(
+                                              Icons.mic,
+                                              color: Colors.black,
+                                            )
+                                          : const Icon(
+                                              Icons.square,
+                                              color: Colors.black,
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    setAudio();
+                                    audioPlayer.resume();
+                                  },
+                                  icon: Container(
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white,
+                                    ),
+                                    width: 40,
+                                    height: 40,
+                                    child: const Icon(
+                                      Icons.play_arrow,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    audioPlayer.pause();
+                                  },
+                                  icon: Container(
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white,
+                                    ),
+                                    width: 40,
+                                    height: 40,
+                                    child: const Icon(
+                                      Icons.pause,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 14,
+                            ),
+                            DropdownButtonFormField2(
+                              style: const TextStyle(color: Colors.white),
+                              isExpanded: true,
+                              decoration: InputDecoration(
+                                iconColor: Colors.white,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              hint: Text(
+                                anythingToShow
+                                    ? widget.note.category!
+                                    : ' Category',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                              items: categoryItems
+                                  .map((item) => DropdownMenuItem<String>(
+                                        value: item,
+                                        child: Text(
+                                          item,
+                                          style: const TextStyle(
+                                              color: Colors.white),
+                                        ),
+                                      ))
+                                  .toList(),
+                              validator: (value) {
+                                if (value == null) {
+                                  return 'Please select a category.';
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedCategory = value.toString();
+                                });
+                              },
+                              onSaved: (value) {},
+                              buttonStyleData: const ButtonStyleData(
+                                padding: EdgeInsets.only(right: 8),
+                              ),
+                              iconStyleData: const IconStyleData(
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down_rounded,
+                                  color: Colors.white,
+                                ),
+                                iconSize: 24,
+                              ),
+                              dropdownStyleData: DropdownStyleData(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[800],
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              menuItemStyleData: const MenuItemStyleData(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                              ),
+                            ),
                           ],
                         ),
                   GestureDetector(
@@ -626,6 +757,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                           await Hive.box<Notes>('notesBox').putAt(
                             int.parse(widget.note.id!),
                             Notes(
+                              voice: voiceString,
                               image: imageString,
                               category: selectedCategory,
                               colorAlpha: selectedColor?.alpha,
@@ -654,6 +786,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                         } else {
                           await Hive.box<Notes>('notesBox').add(
                             Notes(
+                              voice: voiceString,
                               image: imageString,
                               category: selectedCategory,
                               colorAlpha: selectedColor?.alpha,
@@ -734,3 +867,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     );
   }
 }
+
+
+//ezafe kardan be hive
+//purchase check
