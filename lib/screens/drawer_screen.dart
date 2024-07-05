@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:daily_tasks/models/notification_model.dart';
 import 'package:daily_tasks/screens/add_birthday_screen.dart';
 import 'package:daily_tasks/screens/add_category_screen.dart';
 import 'package:daily_tasks/screens/add_task_screen.dart';
@@ -29,15 +28,8 @@ class _DrawerWidgetState extends State<DrawerWidget>
   @override
   void initState() {
     getProfile();
-    animeController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 500));
-    super.initState();
-  }
 
-  @override
-  void dispose() {
-    animeController.dispose();
-    super.dispose();
+    super.initState();
   }
 
   Future<void> _openUrl(String url) async {
@@ -57,6 +49,8 @@ class _DrawerWidgetState extends State<DrawerWidget>
     SharedPreferences prefProfileImage = await SharedPreferences.getInstance();
     SharedPreferences prefProfileName = await SharedPreferences.getInstance();
     SharedPreferences prefProfileNumber = await SharedPreferences.getInstance();
+    SharedPreferences isPerchased = await SharedPreferences.getInstance();
+    purchase = isPerchased.getBool('purchase')!;
 
     setState(() {
       showImg = prefProfileImage.getString('profileImage')!;
@@ -105,13 +99,26 @@ class _DrawerWidgetState extends State<DrawerWidget>
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                showName,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                              Row(
+                                children: [
+                                  Text(
+                                    showName,
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 4,
+                                  ),
+                                  purchase
+                                      ? const Icon(
+                                          Icons.workspace_premium,
+                                          color: Colors.deepOrangeAccent,
+                                        )
+                                      : const SizedBox(),
+                                ],
                               ),
                               Text(
                                 showNumber,
@@ -220,9 +227,10 @@ class _DrawerWidgetState extends State<DrawerWidget>
                       );
                     }
                   } else {
+                    Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('some error in happened'),
+                        content: Text('some error is happened'),
                       ),
                     );
                   }
@@ -242,11 +250,6 @@ class _DrawerWidgetState extends State<DrawerWidget>
               },
               text: 'Buy me a coffee',
               icon: Icons.coffee_rounded,
-            ),
-            DrawerListTile(
-              func: () {},
-              text: 'Language',
-              icon: Icons.language_rounded,
             ),
             DrawerListTile(
               text: 'Settings',

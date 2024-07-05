@@ -31,6 +31,7 @@ class _GoPremmiumState extends State<GoPremmium> {
       child: Scaffold(
         backgroundColor: Colors.black87,
         appBar: AppBar(
+          centerTitle: true,
           leading: Builder(builder: (context) {
             return InkWell(
               onTap: () {

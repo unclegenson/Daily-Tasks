@@ -157,6 +157,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.black87,
       appBar: AppBar(
+        centerTitle: true,
         titleSpacing: 10,
         elevation: 0,
         toolbarHeight: 70,

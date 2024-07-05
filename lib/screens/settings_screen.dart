@@ -1,6 +1,7 @@
 import 'package:daily_tasks/main.dart';
 import 'package:daily_tasks/models/models.dart';
 import 'package:daily_tasks/screens/edit_profile_screens.dart';
+import 'package:daily_tasks/screens/home.dart';
 import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -54,6 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             );
           },
         ),
+        centerTitle: true,
         backgroundColor: Colors.black87,
         title: const MyAppBarTitle(
           fontSize: 46,
@@ -75,37 +77,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   MaterialPageRoute(
                     builder: (context) {
                       return EditProfileScreen(
-                          image: profileImage,
-                          name: profileName,
-                          number: profileNumber);
+                        image: profileImage,
+                        name: profileName,
+                        number: profileNumber,
+                      );
                     },
                   ),
                 );
               },
-            ),
-            Settingbutton(
-              size: size,
-              icon: Icons.color_lens_outlined,
-              text: 'App theme',
-              func: () {},
-            ),
-            Settingbutton(
-              size: size,
-              icon: Icons.font_download_rounded,
-              text: 'Font',
-              func: () {},
-            ),
-            Settingbutton(
-              size: size,
-              icon: Icons.text_rotate_up_outlined,
-              text: 'Font size',
-              func: () {},
-            ),
-            Settingbutton(
-              size: size,
-              icon: Icons.line_weight,
-              text: 'Font Weight',
-              func: () {},
             ),
             Settingbutton(
               size: size,
@@ -121,7 +100,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 setState(() {
                   if (purchase == true) {
                     reminder = !reminder;
-                    //todo: reminder relate to purchase key pref
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -152,8 +130,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Navigator.pop(context);
                   },
                   onTapConfirm: () {
-                    Hive.box<Notes>('notesBox').deleteFromDisk();
-                    Navigator.pop(context);
+                    if (Hive.box<Notes>('notesBox').length > 0) {
+                      Hive.box<Notes>('notesBox').deleteFromDisk().then(
+                        (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Please Close and reOpen the app for better performance'),
+                            ),
+                          );
+                        },
+                      );
+                      Navigator.pop(context);
+                    } else {
+                      Navigator.pop(context);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Nothing to delete :|'),
+                        ),
+                      );
+                    }
                   },
                   panaraDialogType: PanaraDialogType.error,
                   noImage: true,

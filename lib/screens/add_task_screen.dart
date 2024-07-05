@@ -95,7 +95,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
   Future showOptions() async {
     SharedPreferences premium = await SharedPreferences.getInstance();
-    if (!premium.getBool('purchase')!) {
+    if (premium.getBool('purchase')!) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -236,6 +236,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       if (widget.note.title == '') {
         setState(() {
           anythingToShow = false;
+          pathOfVoice = widget.note.voice;
         });
       } else {
         setState(() {
@@ -257,7 +258,10 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   }
 
   Future record() async {
-    await recorder.startRecorder(toFile: 'audio');
+    SharedPreferences audioId = await SharedPreferences.getInstance();
+    audioId.setInt('audio', audioId.getInt('audio')! + 1);
+    await recorder.startRecorder(
+        toFile: 'audio${audioId.getInt('audio')}', codec: Codec.defaultCodec);
   }
 
   Future stop() async {
@@ -487,14 +491,14 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                             Slider(
                               activeColor: selectedColor,
                               divisions: 20,
-                              value: position.inMilliseconds.toDouble(),
+                              value: position.inSeconds.toDouble(),
                               onChanged: (value) async {
                                 final position =
                                     Duration(seconds: value.toInt());
                                 await audioPlayer.seek(position);
                               },
                               min: 0,
-                              max: durationOfAudio.inMilliseconds.toDouble(),
+                              max: durationOfAudio.inSeconds.toDouble(),
                             ),
                             Padding(
                               padding:
@@ -597,67 +601,10 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                             const SizedBox(
                               height: 14,
                             ),
-                            DropdownButtonFormField2(
-                              style: const TextStyle(color: Colors.white),
-                              isExpanded: true,
-                              decoration: InputDecoration(
-                                iconColor: Colors.white,
-                                contentPadding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
-                              hint: Text(
-                                anythingToShow
-                                    ? widget.note.category!
-                                    : ' Category',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              ),
-                              items: categoryItems
-                                  .map((item) => DropdownMenuItem<String>(
-                                        value: item,
-                                        child: Text(
-                                          item,
-                                          style: const TextStyle(
-                                              color: Colors.white),
-                                        ),
-                                      ))
-                                  .toList(),
-                              validator: (value) {
-                                if (value == null) {
-                                  return 'Please select a category.';
-                                }
-                                return null;
-                              },
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedCategory = value.toString();
-                                });
-                              },
-                              onSaved: (value) {},
-                              buttonStyleData: const ButtonStyleData(
-                                padding: EdgeInsets.only(right: 8),
-                              ),
-                              iconStyleData: const IconStyleData(
-                                icon: Icon(
-                                  Icons.keyboard_arrow_down_rounded,
-                                  color: Colors.white,
-                                ),
-                                iconSize: 24,
-                              ),
-                              dropdownStyleData: DropdownStyleData(
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[800],
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
-                              menuItemStyleData: const MenuItemStyleData(
-                                padding: EdgeInsets.symmetric(horizontal: 16),
-                              ),
+                            TitleInputWidget(
+                              size: size,
+                              titleText:
+                                  anythingToShow ? widget.note.title! : '',
                             ),
                           ],
                         ),
@@ -743,8 +690,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   GestureDetector(
                     onTap: () async {
                       if (mainTitleText == null ||
-                          mainDescriptionText == null ||
-                          selectedCategory == null) {
+                          mainDescriptionText == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             duration: Duration(milliseconds: 1500),
@@ -838,6 +784,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                         selectedCategory = null;
                         mainDescriptionText = null;
                         mainTitleText = null;
+                        voiceString = '';
                       }
                     },
                     child: AnimatedContainer(

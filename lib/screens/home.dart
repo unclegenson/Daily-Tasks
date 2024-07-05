@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,6 +10,9 @@ import 'package:daily_tasks/screens/add_task_screen.dart';
 import 'package:daily_tasks/screens/drawer_screen.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import '../widgets/app_widgets.dart';
+import 'package:flutter_sound/public/flutter_sound_player.dart' as h;
+
+List voiceList = [];
 
 bool showSearchBar = false;
 List weekDays = ['Mon', 'Tue', 'Wed', 'Tur', 'Fri', 'Sat', 'Sun'];
@@ -40,11 +44,38 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+String? homePathOfVoice;
+
+Duration homeDurationOfAudio = Duration.zero;
+Duration homeAudioPosition = Duration.zero;
+final homeAudioPlayer = AudioPlayer();
+
 class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
+    homeAudioPlayer.onPlayerStateChanged.listen(
+      (event) {
+        setState(() {
+          isPlaying = event == h.PlayerState.isPlaying;
+        });
+      },
+    );
+    homeAudioPlayer.onDurationChanged.listen((newDuration) {
+      setState(() {
+        homeDurationOfAudio = newDuration;
+      });
+    });
+    homeAudioPlayer.onPositionChanged.listen((newPosition) {
+      setState(() {
+        homeAudioPosition = newPosition;
+      });
+    });
     textsListCreate();
     super.initState();
+  }
+
+  Future homeSetAudio() async {
+    homeAudioPlayer.setSourceDeviceFile(homePathOfVoice!);
   }
 
   @override
@@ -56,156 +87,40 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.black87,
         appBar: AppBar(
           titleSpacing: 10,
-          leading: Builder(builder: (context) {
-            return InkWell(
-              onTap: () {
-                Scaffold.of(context).openDrawer();
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.grey[800],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: SvgPicture.asset(
-                      'assets/ham3.svg',
-                      colorFilter: const ColorFilter.mode(
-                          Colors.white, BlendMode.srcATop),
+          leading: Builder(
+            builder: (context) {
+              return InkWell(
+                onTap: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.grey[800],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: SvgPicture.asset(
+                        'assets/ham3.svg',
+                        colorFilter: const ColorFilter.mode(
+                            Colors.white, BlendMode.srcATop),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          }),
+              );
+            },
+          ),
           elevation: 0,
           toolbarHeight: 70,
+          centerTitle: true,
           backgroundColor: Colors.black87,
           title: const MyAppBarTitle(
             title: 'Daily Tasks',
             fontSize: 46,
           ),
-          actions: [
-            SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: AnimatedSize(
-                  alignment: Alignment.centerLeft,
-                  duration: const Duration(milliseconds: 600),
-                  curve: Curves.easeInBack,
-                  child: SingleChildScrollView(
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              showSearchBar = !showSearchBar;
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              color: Colors.grey[800],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(13.0),
-                              child: SvgPicture.asset(
-                                'assets/svgsearch.svg',
-                                colorFilter: const ColorFilter.mode(
-                                    Colors.white, BlendMode.srcATop),
-                              ),
-                            ),
-                          ),
-                        ),
-                        showSearchBar
-                            ? SizedBox(
-                                width: size.width * 7 / 10,
-                                child: TextField(
-                                  onChanged: (value) {
-                                    // texts.clear();
-                                    // descriptions.clear();
-                                    // dateTimes.clear();
-                                    // categories.clear();
-                                    // containerColors.clear();
-                                    // searchItemIndexes.clear();
-                                    // Hive.box<Notes>('notesBox')
-                                    //     .values
-                                    //     .forEach(
-                                    //   (element) {
-                                    //     dateTimes.add({
-                                    //       'day': element.day,
-                                    //       'weekDay': element.weekDay,
-                                    //       'mounth': element.month,
-                                    //       'year': element.year
-                                    //     });
-                                    //     copyOfDateTimes = dateTimes;
-                                    //     print(copyOfDateTimes);
-
-                                    //     texts.add(element.title);
-                                    //     copyOfTexts = texts;
-
-                                    //     categories.add(element.category);
-                                    //     copyOfCategories = categories;
-
-                                    //     containerColors.add(
-                                    //       Color.fromARGB(
-                                    //         element.colorAlpha!,
-                                    //         element.colorRed!,
-                                    //         element.colorGreen!,
-                                    //         element.colorBlue!,
-                                    //       ),
-                                    //     );
-                                    //     copyOfContainerColors =
-                                    //         containerColors;
-
-                                    //     descriptions.add(element.description);
-                                    //     copyOfDescriptions = descriptions;
-                                    //     print(copyOfDescriptions);
-                                    //   },
-                                    // );
-                                    // setState(() {
-                                    //   texts = texts.where((element) {
-                                    //     return element
-                                    //         .toString()
-                                    //         .toLowerCase()
-                                    //         .contains(
-                                    //           value.toString().toLowerCase(),
-                                    //         );
-                                    //   }).toList();
-                                    //   descriptions.clear();
-                                    //   dateTimes.clear();
-                                    //   categories.clear();
-                                    //   containerColors.clear();
-                                    //   for (var element in texts) {
-                                    //     searchItemIndexes.add(
-                                    //         copyOfTexts.indexOf(element));
-                                    //   }
-
-                                    //   for (var index in searchItemIndexes) {
-                                    //     descriptions
-                                    //         .add(copyOfDescriptions[index]);
-                                    //     dateTimes.add(copyOfDateTimes[index]);
-                                    //     containerColors.add(
-                                    //         copyOfContainerColors[index]);
-                                    //     categories
-                                    //         .add(copyOfCategories[index]);
-                                    //   }
-                                    // });
-                                  },
-                                  cursorColor: Colors.white,
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              )
-                            : const SizedBox(),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
         ),
         floatingActionButton: fabWidget(),
         body: Center(
@@ -239,6 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) {
+                                        print(texts[index]);
                                         return AddNoteScreen(
                                           note: Notes(
                                             voice: voiceList[index],
@@ -284,50 +200,198 @@ class _HomeScreenState extends State<HomeScreen> {
                                           borderRadius:
                                               BorderRadius.circular(10),
                                           color: containerColors[index],
+                                          //? -----------------------COLOR----------------------------
                                         ),
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.end,
                                           children: [
-                                            Container(
-                                              padding: const EdgeInsets.only(
-                                                left: 12,
-                                                right: 10,
-                                                top: 10,
-                                              ),
-                                              child: Align(
-                                                alignment: Alignment.topLeft,
-                                                child: Text(
-                                                  texts[index],
-                                                  style: const TextStyle(
-                                                    fontSize: 22,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontStyle: FontStyle.normal,
+                                            voiceList[index] == null
+                                                ? Column(
+                                                    children: [
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                          left: 12,
+                                                          right: 10,
+                                                          top: 10,
+                                                        ),
+                                                        child: Align(
+                                                          alignment:
+                                                              Alignment.topLeft,
+                                                          child: Text(
+                                                            texts[
+                                                                index], //!--------------------TEXT-----------------------
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 22,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .normal,
+                                                            ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            maxLines: 1,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                left: 12,
+                                                                right: 10),
+                                                        child: Align(
+                                                          alignment:
+                                                              Alignment.topLeft,
+                                                          child: Text(
+                                                            descriptions[
+                                                                index], //@------------------------DESCRIPTION-------------------
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 18,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              color: Colors
+                                                                  .black54,
+                                                            ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            maxLines: 3,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  )
+                                                : Stack(
+                                                    alignment:
+                                                        Alignment.topCenter,
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                          texts[
+                                                              index], //!--------------------TEXT-----------------------
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 22,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            fontStyle: FontStyle
+                                                                .normal,
+                                                          ),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          maxLines: 1,
+                                                        ),
+                                                      ),
+                                                      Column(
+                                                        children: [
+                                                          const SizedBox(
+                                                            height: 30,
+                                                          ),
+                                                          Slider(
+                                                            activeColor:
+                                                                Colors.green,
+                                                            divisions: 20,
+                                                            value:
+                                                                homeAudioPosition
+                                                                    .inSeconds
+                                                                    .toDouble(),
+                                                            onChanged:
+                                                                (value) async {
+                                                              final homeAudioPosition =
+                                                                  Duration(
+                                                                      seconds: value
+                                                                          .toInt());
+                                                              await homeAudioPlayer
+                                                                  .seek(
+                                                                      homeAudioPosition);
+                                                            },
+                                                            min: 0,
+                                                            max:
+                                                                homeDurationOfAudio
+                                                                    .inSeconds
+                                                                    .toDouble(),
+                                                          ),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              GestureDetector(
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    homePathOfVoice =
+                                                                        voiceList[
+                                                                            index];
+                                                                  });
+                                                                  homeSetAudio();
+                                                                  homeAudioPlayer
+                                                                      .resume();
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                  decoration:
+                                                                      const BoxDecoration(
+                                                                    shape: BoxShape
+                                                                        .circle,
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
+                                                                  width: 40,
+                                                                  height: 40,
+                                                                  child:
+                                                                      const Icon(
+                                                                    Icons
+                                                                        .play_arrow,
+                                                                    color: Colors
+                                                                        .black,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 8,
+                                                              ),
+                                                              GestureDetector(
+                                                                onTap: () {
+                                                                  homeAudioPlayer
+                                                                      .pause();
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                  decoration:
+                                                                      const BoxDecoration(
+                                                                    shape: BoxShape
+                                                                        .circle,
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
+                                                                  width: 40,
+                                                                  height: 40,
+                                                                  child:
+                                                                      const Icon(
+                                                                    Icons.pause,
+                                                                    color: Colors
+                                                                        .black,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
                                                   ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 1,
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              padding: const EdgeInsets.only(
-                                                  left: 12, right: 10),
-                                              child: Align(
-                                                alignment: Alignment.topLeft,
-                                                child: Text(
-                                                  descriptions[index],
-                                                  style: const TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.w400,
-                                                    color: Colors.black54,
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 3,
-                                                ),
-                                              ),
-                                            ),
                                             const Spacer(),
                                             Row(
                                               children: [
@@ -605,10 +669,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                               width: 60,
                                               child: ClipRRect(
                                                 borderRadius:
-                                                    BorderRadius.circular(50),
+                                                    BorderRadius.circular(10),
                                                 child: Image.file(
-                                                  File(boxImages[
-                                                      index]), //todo: ................................................
+                                                  File(boxImages[index]),
+                                                  filterQuality:
+                                                      FilterQuality.high,
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
@@ -706,37 +771,34 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
 
-  List voiceList = [];
+void textsListCreate() {
+  descriptions.clear();
+  texts.clear();
+  dateTimes.clear();
+  categories.clear();
+  voiceList.clear();
+  containerColors.clear();
+  boxImages.clear();
 
-  void textsListCreate() {
-    descriptions.clear();
-    texts.clear();
-    dateTimes.clear();
-    categories.clear();
-    voiceList.clear();
-
-    containerColors.clear();
-    boxImages.clear();
-
-    Hive.box<Notes>('notesBox').values.forEach(
-      (element) {
-        if (!element.done!) {
-          dateTimes.add({
-            'day': element.day,
-            'weekDay': element.weekDay,
-            'mounth': element.month,
-            'year': element.year
-          });
-          voiceList.add(element.voice);
-          boxImages.add(element.image);
-          texts.add(element.title);
-          categories.add(element.category);
-          descriptions.add(element.description);
-          containerColors.add(Color.fromARGB(element.colorAlpha!,
-              element.colorRed!, element.colorGreen!, element.colorBlue!));
-        }
-      },
-    );
-  }
+  Hive.box<Notes>('notesBox').values.forEach(
+    (element) {
+      if (!element.done!) {
+        dateTimes.add({
+          'day': element.day,
+          'weekDay': element.weekDay,
+          'mounth': element.month,
+          'year': element.year
+        });
+        voiceList.add(element.voice);
+        boxImages.add(element.image);
+        texts.add(element.title);
+        categories.add(element.category);
+        descriptions.add(element.description);
+        containerColors.add(Color.fromARGB(element.colorAlpha!,
+            element.colorRed!, element.colorGreen!, element.colorBlue!));
+      }
+    },
+  );
 }
