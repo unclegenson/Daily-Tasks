@@ -758,6 +758,16 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                               content: Text('Task Added!'),
                             ),
                           );
+                          if (imageString != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                duration: Duration(milliseconds: 2500),
+                                behavior: SnackBarBehavior.fixed,
+                                content: Text(
+                                    'Long press on each Note to see each image'),
+                              ),
+                            );
+                          }
                         }
 
                         Navigator.pop(context);

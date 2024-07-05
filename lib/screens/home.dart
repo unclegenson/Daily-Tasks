@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -149,6 +150,58 @@ class _HomeScreenState extends State<HomeScreen> {
                             return LayoutBuilder(
                                 builder: (context, constraints) {
                               return GestureDetector(
+                                onLongPress: () {
+                                  boxImages[index] != null
+                                      ? showGeneralDialog(
+                                          barrierColor:
+                                              Colors.black.withOpacity(0.5),
+                                          transitionBuilder:
+                                              (context, a1, a2, widget) {
+                                            return Transform.scale(
+                                              scale: a1.value,
+                                              child: Opacity(
+                                                opacity: a1.value,
+                                                child: AlertDialog(
+                                                  content: BackdropFilter(
+                                                    filter: ImageFilter.blur(
+                                                      sigmaX: 5,
+                                                      sigmaY: 5,
+                                                    ),
+                                                    child: ClipRRect(
+                                                      child: Container(
+                                                        height:
+                                                            size.width - 100,
+                                                        width: size.width - 100,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          // !-------------------image------------------
+                                                          image:
+                                                              DecorationImage(
+                                                            image: FileImage(
+                                                              File(boxImages[
+                                                                  index]),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          transitionDuration:
+                                              Duration(milliseconds: 200),
+                                          barrierDismissible: true,
+                                          barrierLabel: '',
+                                          context: context,
+                                          pageBuilder: (context, animation1,
+                                              animation2) {
+                                            return Container();
+                                          },
+                                        )
+                                      : const AboutDialog();
+                                },
                                 onTap: () {
                                   Navigator.push(
                                     context,
@@ -665,8 +718,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ? Padding(
                                             padding: const EdgeInsets.all(6.0),
                                             child: SizedBox(
-                                              height: 60,
-                                              width: 60,
+                                              height: 30,
+                                              width: 30,
                                               child: ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
