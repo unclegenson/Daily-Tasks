@@ -95,6 +95,7 @@ class _AddBirthdayState extends State<AddBirthday> {
       backgroundColor: Colors.black87,
       appBar: AppBar(
         titleSpacing: 10,
+        centerTitle: true,
         elevation: 0,
         toolbarHeight: 70,
         leading: Builder(
@@ -133,12 +134,12 @@ class _AddBirthdayState extends State<AddBirthday> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: SizedBox(
-            height: size.height * 8.2 / 10,
+            height: size.height * 9 / 10,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  height: size.height * 4.5 / 10,
+                  height: size.height * 5 / 10,
                   child: ListView.builder(
                     itemCount: nameList.length,
                     itemBuilder: (context, index) {

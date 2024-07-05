@@ -40,6 +40,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
     return Scaffold(
       backgroundColor: Colors.black87,
       appBar: AppBar(
+        centerTitle: true,
         titleSpacing: 10,
         elevation: 0,
         toolbarHeight: 70,
