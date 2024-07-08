@@ -4,6 +4,7 @@ import 'package:daily_tasks/screens/add_birthday_screen.dart';
 import 'package:daily_tasks/screens/add_category_screen.dart';
 import 'package:daily_tasks/screens/add_task_screen.dart';
 import 'package:daily_tasks/screens/go_premium_screen.dart';
+import 'package:daily_tasks/screens/review_screen.dart';
 import 'package:daily_tasks/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -93,9 +94,6 @@ class _DrawerWidgetState extends State<DrawerWidget>
                       ),
                       Row(
                         children: [
-                          const SizedBox(
-                            width: 0,
-                          ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -104,8 +102,9 @@ class _DrawerWidgetState extends State<DrawerWidget>
                                   Text(
                                     showName,
                                     style: const TextStyle(
+                                      fontFamily: 'title',
                                       color: Colors.black,
-                                      fontSize: 20,
+                                      fontSize: 26,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -113,9 +112,9 @@ class _DrawerWidgetState extends State<DrawerWidget>
                                     width: 4,
                                   ),
                                   purchase
-                                      ? const Icon(
+                                      ? Icon(
                                           Icons.workspace_premium,
-                                          color: Colors.deepOrangeAccent,
+                                          color: Colors.green[700],
                                         )
                                       : const SizedBox(),
                                 ],
@@ -124,7 +123,8 @@ class _DrawerWidgetState extends State<DrawerWidget>
                                 showNumber,
                                 style: const TextStyle(
                                   color: Colors.black,
-                                  fontSize: 15,
+                                  fontFamily: 'title',
+                                  fontSize: 22,
                                   fontWeight: FontWeight.w300,
                                 ),
                               ),
@@ -141,7 +141,16 @@ class _DrawerWidgetState extends State<DrawerWidget>
               ),
             ),
             DrawerListTile(
-              func: () {},
+              func: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return const ReviewScreen();
+                    },
+                  ),
+                );
+              },
               text: 'Review',
               icon: Icons.bar_chart_rounded,
             ),

@@ -1,16 +1,16 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:math';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:daily_tasks/models/models.dart';
-import 'package:daily_tasks/models/notification_model.dart';
 import 'package:daily_tasks/screens/add_task_screen.dart';
 import 'package:daily_tasks/screens/settings_screen.dart';
 import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AddBirthday extends StatefulWidget {
   const AddBirthday({super.key});
@@ -298,9 +298,9 @@ class _AddBirthdayState extends State<AddBirthday> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                'We will let you know at ${time}!',
+                                'We will let you know at $time!',
                               ),
-                              duration: Duration(milliseconds: 1800),
+                              duration: const Duration(milliseconds: 1800),
                             ),
                           );
 
@@ -368,9 +368,9 @@ class _AddBirthdayState extends State<AddBirthday> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                'We will let you know at ${time}!',
+                                'We will let you know at $time!',
                               ),
-                              duration: Duration(milliseconds: 1800),
+                              duration: const Duration(milliseconds: 1800),
                             ),
                           );
 

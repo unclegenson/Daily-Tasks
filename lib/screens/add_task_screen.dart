@@ -1,6 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 import 'dart:math';
-import 'dart:ui';
 import 'package:audioplayers/audioplayers.dart';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
@@ -40,7 +41,6 @@ List colorItems = const [
 ];
 
 String? selectedCategory;
-bool micOn = false;
 bool isRecording = false;
 
 class AddNoteScreen extends StatefulWidget {
@@ -160,7 +160,6 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   File? _image;
   String? imageString;
   final picker = ImagePicker();
-  String? voiceString;
   //Image Picker function to get image from gallery
   Future getImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -198,36 +197,56 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     final status = await Permission.microphone.request();
 
     await recorder.openRecorder();
-    recorder.setSubscriptionDuration(Duration(milliseconds: 500));
+    recorder.setSubscriptionDuration(const Duration(milliseconds: 200));
   }
 
   Future setAudio() async {
     audioPlayer.setSourceDeviceFile(pathOfVoice!);
   }
 
+  bool micOn = false;
+
+  // @override
+  // void dispose() {
+  //   audioPlayer.dispose();
+  //   super.dispose();
+  // }
+
   @override
   void initState() {
     audioPlayer.onPlayerStateChanged.listen(
       (event) {
-        setState(() {
-          isPlaying = event == h.PlayerState.isPlaying;
-        });
+        if (this.mounted) {
+          setState(() {
+            isPlaying = event == h.PlayerState.isPlaying;
+          });
+        }
+        ;
       },
     );
     audioPlayer.onDurationChanged.listen((newDuration) {
-      setState(() {
-        durationOfAudio = newDuration;
-      });
+      if (this.mounted) {
+        setState(() {
+          durationOfAudio = newDuration;
+        });
+      }
     });
     audioPlayer.onPositionChanged.listen((newPosition) {
-      setState(() {
-        position = newPosition;
-      });
+      if (this.mounted) {
+        setState(() {
+          position = newPosition;
+        });
+      }
     });
 
     initRecorder();
 
     setState(() {
+      if (widget.note.voice == '' || widget.note.voice == null) {
+        micOn = false;
+      } else {
+        micOn = true;
+      }
       categoryItems.clear();
 
       Hive.box<Categories>('categoryBox').values.forEach((element) {
@@ -236,11 +255,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       if (widget.note.title == '') {
         setState(() {
           anythingToShow = false;
-          pathOfVoice = widget.note.voice;
         });
       } else {
         setState(() {
           anythingToShow = true;
+          pathOfVoice = widget.note.voice;
           mainTitleText = widget.note.title;
           mainDescriptionText = widget.note.description;
           selectedCategory = widget.note.category;
@@ -260,17 +279,15 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   Future record() async {
     SharedPreferences audioId = await SharedPreferences.getInstance();
     audioId.setInt('audio', audioId.getInt('audio')! + 1);
-    await recorder.startRecorder(
-        toFile: 'audio${audioId.getInt('audio')}', codec: Codec.defaultCodec);
+    await recorder.startRecorder(toFile: 'audio${audioId.getInt('audio')}');
   }
 
   Future stop() async {
     final path = await recorder.stopRecorder();
     setState(() {
       pathOfVoice = path;
-      voiceString = pathOfVoice;
     });
-    audioPlayer.setSourceDeviceFile(pathOfVoice!);
+    setAudio();
   }
 
   @override
@@ -397,7 +414,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                                 ),
                               ),
                               hint: Text(
-                                anythingToShow
+                                anythingToShow && widget.note.voice == null
                                     ? widget.note.category!
                                     : ' Category',
                                 style: const TextStyle(
@@ -469,7 +486,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                             ),
                             StreamBuilder(
                               stream: recorder.onProgress,
-                              builder: (context, snapshot) {
+                              builder: (_, snapshot) {
                                 final duration = snapshot.hasData
                                     ? snapshot.data!.duration
                                     : Duration.zero;
@@ -478,11 +495,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                                     n.toString().padLeft(2);
                                 final twoDigitMinutes =
                                     twoDigits(duration.inMinutes.remainder(60));
-                                final twoDigitSecons =
+                                final twoDigitSeconds =
                                     twoDigits(duration.inSeconds.remainder(60));
 
                                 return Text(
-                                  '$twoDigitMinutes :$twoDigitSecons',
+                                  '$twoDigitMinutes :$twoDigitSeconds',
                                   style: const TextStyle(
                                       color: Colors.white, fontSize: 26),
                                 );
@@ -563,8 +580,12 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                                 ),
                                 IconButton(
                                   onPressed: () {
-                                    setAudio();
-                                    audioPlayer.resume();
+                                    if (pathOfVoice != null ||
+                                        pathOfVoice != '') {
+                                      print('------------------------');
+                                      setAudio();
+                                      audioPlayer.resume();
+                                    }
                                   },
                                   icon: Container(
                                     decoration: const BoxDecoration(
@@ -689,8 +710,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      if (mainTitleText == null ||
-                          mainDescriptionText == null) {
+                      if ((mainTitleText == null || pathOfVoice == null) ||
+                          (mainDescriptionText == null ||
+                              mainTitleText == null)) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             duration: Duration(milliseconds: 1500),
@@ -703,7 +725,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                           await Hive.box<Notes>('notesBox').putAt(
                             int.parse(widget.note.id!),
                             Notes(
-                              voice: voiceString,
+                              voice: pathOfVoice,
                               image: imageString,
                               category: selectedCategory,
                               colorAlpha: selectedColor?.alpha,
@@ -732,7 +754,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                         } else {
                           await Hive.box<Notes>('notesBox').add(
                             Notes(
-                              voice: voiceString,
+                              voice: pathOfVoice,
                               image: imageString,
                               category: selectedCategory,
                               colorAlpha: selectedColor?.alpha,
@@ -794,7 +816,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                         selectedCategory = null;
                         mainDescriptionText = null;
                         mainTitleText = null;
-                        voiceString = '';
+                        pathOfVoice = '';
                       }
                     },
                     child: AnimatedContainer(

@@ -52,24 +52,37 @@ Duration homeAudioPosition = Duration.zero;
 final homeAudioPlayer = AudioPlayer();
 
 class _HomeScreenState extends State<HomeScreen> {
+  // @override
+  // void dispose() {
+  //   homeAudioPlayer.dispose();
+  //   super.dispose();
+  // }
+
   @override
   void initState() {
     homeAudioPlayer.onPlayerStateChanged.listen(
       (event) {
-        setState(() {
-          isPlaying = event == h.PlayerState.isPlaying;
-        });
+        if (this.mounted) {
+          setState(() {
+            // ignore: unrelated_type_equality_checks
+            isPlaying = event == h.PlayerState.isPlaying;
+          });
+        }
       },
     );
     homeAudioPlayer.onDurationChanged.listen((newDuration) {
-      setState(() {
-        homeDurationOfAudio = newDuration;
-      });
+      if (this.mounted) {
+        setState(() {
+          homeDurationOfAudio = newDuration;
+        });
+      }
     });
     homeAudioPlayer.onPositionChanged.listen((newPosition) {
-      setState(() {
-        homeAudioPosition = newPosition;
-      });
+      if (this.mounted) {
+        setState(() {
+          homeAudioPosition = newPosition;
+        });
+      }
     });
     textsListCreate();
     super.initState();
@@ -162,6 +175,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                               child: Opacity(
                                                 opacity: a1.value,
                                                 child: AlertDialog(
+                                                  backgroundColor:
+                                                      Colors.white24,
                                                   content: BackdropFilter(
                                                     filter: ImageFilter.blur(
                                                       sigmaX: 5,
@@ -169,17 +184,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     ),
                                                     child: ClipRRect(
                                                       child: Container(
-                                                        height:
-                                                            size.width - 100,
-                                                        width: size.width - 100,
+                                                        height: size.width,
+                                                        width: size.width,
                                                         decoration:
                                                             BoxDecoration(
                                                           // !-------------------image------------------
                                                           image:
                                                               DecorationImage(
+                                                            fit:
+                                                                BoxFit.fitWidth,
                                                             image: FileImage(
-                                                              File(boxImages[
-                                                                  index]),
+                                                              File(
+                                                                boxImages[
+                                                                    index],
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
@@ -191,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             );
                                           },
                                           transitionDuration:
-                                              Duration(milliseconds: 200),
+                                              const Duration(milliseconds: 200),
                                           barrierDismissible: true,
                                           barrierLabel: '',
                                           context: context,
@@ -207,7 +225,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) {
-                                        print(texts[index]);
                                         return AddNoteScreen(
                                           note: Notes(
                                             voice: voiceList[index],
@@ -352,30 +369,44 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           const SizedBox(
                                                             height: 30,
                                                           ),
-                                                          Slider(
-                                                            activeColor:
-                                                                Colors.green,
-                                                            divisions: 20,
-                                                            value:
-                                                                homeAudioPosition
-                                                                    .inSeconds
-                                                                    .toDouble(),
-                                                            onChanged:
-                                                                (value) async {
-                                                              final homeAudioPosition =
-                                                                  Duration(
-                                                                      seconds: value
-                                                                          .toInt());
-                                                              await homeAudioPlayer
-                                                                  .seek(
-                                                                      homeAudioPosition);
-                                                            },
-                                                            min: 0,
-                                                            max:
-                                                                homeDurationOfAudio
-                                                                    .inSeconds
-                                                                    .toDouble(),
-                                                          ),
+                                                          homePathOfVoice ==
+                                                                  voiceList[
+                                                                      index]
+                                                              ? Slider(
+                                                                  activeColor:
+                                                                      Colors
+                                                                          .green,
+                                                                  divisions: 20,
+                                                                  value: homeAudioPosition
+                                                                      .inSeconds
+                                                                      .toDouble(),
+                                                                  onChanged:
+                                                                      (value) async {
+                                                                    final homeAudioPosition =
+                                                                        Duration(
+                                                                            seconds:
+                                                                                value.toInt());
+                                                                    await homeAudioPlayer
+                                                                        .seek(
+                                                                      homeAudioPosition,
+                                                                    );
+                                                                  },
+                                                                  min: 0,
+                                                                  max: homeDurationOfAudio
+                                                                      .inSeconds
+                                                                      .toDouble(),
+                                                                )
+                                                              : Slider(
+                                                                  activeColor:
+                                                                      Colors
+                                                                          .green,
+                                                                  divisions: 20,
+                                                                  value: 0,
+                                                                  onChanged:
+                                                                      (value) {},
+                                                                  min: 0,
+                                                                  max: 100,
+                                                                ),
                                                           Row(
                                                             mainAxisAlignment:
                                                                 MainAxisAlignment
@@ -782,7 +813,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     colorAlpha: 0,
                     day: 0,
                     description: '',
-                    done: done,
+                    done: false,
                     hour: 0,
                     id: '',
                     minute: 0,

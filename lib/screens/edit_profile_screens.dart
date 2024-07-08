@@ -4,6 +4,7 @@ import 'package:daily_tasks/screens/home.dart';
 import 'package:daily_tasks/screens/settings_screen.dart';
 import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:image_picker/image_picker.dart';
@@ -266,10 +267,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: TextFormField(
+                  inputFormatters: [LengthLimitingTextInputFormatter(11)],
+                  decoration: const InputDecoration(
+                    hintText: '09100000000',
+                    hintStyle: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
                   initialValue: numberController,
                   onChanged: (value) {
                     setState(() {
-                      numberController = value;
+                      if (value.length > 10) {
+                        String val1 = value.substring(1, 4);
+                        String val2 = value.substring(4, 7);
+                        String val3 = value.substring(7);
+
+                        numberController = '$val1 $val2 $val3';
+                      }
                     });
                   },
                   style: const TextStyle(color: Colors.white),
@@ -294,7 +309,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         const SnackBar(
                           content: Text(
                               '''You must add your profile data to use the app
-It'll unreachable for others.'''),
+Your profile data will be unreachable for others.'''),
                         ),
                       );
                     } else {

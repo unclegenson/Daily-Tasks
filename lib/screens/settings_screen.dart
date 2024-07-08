@@ -1,7 +1,7 @@
 import 'package:daily_tasks/main.dart';
 import 'package:daily_tasks/models/models.dart';
+import 'package:daily_tasks/screens/add_task_screen.dart';
 import 'package:daily_tasks/screens/edit_profile_screens.dart';
-import 'package:daily_tasks/screens/home.dart';
 import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -67,11 +67,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Settingbutton(
-              size: size,
-              icon: Icons.person,
-              text: 'Edit Profile Data',
-              func: () {
+            GestureDetector(
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -85,14 +82,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 );
               },
+              child: Container(
+                height: size.height / 7,
+                width: size.width - 20,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: selectedColor,
+                ),
+                child: const Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(24.0),
+                      child: Icon(
+                        Icons.person,
+                        size: 50,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Edit Profile',
+                          style: TextStyle(color: Colors.black, fontSize: 26),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
             ),
-            Settingbutton(
-              size: size,
-              text: reminder ? 'Reminder On' : 'Reminder Off',
-              icon: reminder
-                  ? Icons.toggle_on_outlined
-                  : Icons.toggle_off_outlined,
-              func: () async {
+            GestureDetector(
+              onTap: () async {
                 SharedPreferences isPerchased =
                     await SharedPreferences.getInstance();
                 purchase = isPerchased.getBool('purchase')!;
@@ -113,12 +134,60 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   }
                 });
               },
+              child: Container(
+                height: size.height / 7,
+                width: size.width - 20,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: selectedColor,
+                ),
+                child: const Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(24.0),
+                      child: Icon(
+                        Icons.notifications_active,
+                        size: 50,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Notifications',
+                          style: TextStyle(color: Colors.black, fontSize: 26),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
             ),
-            Settingbutton(
-              icon: Icons.delete,
-              size: size,
-              text: 'Delete All Tasks',
-              func: () {
+            GestureDetector(
+              onTap: () {},
+              child: Container(
+                height: size.height / 7,
+                width: size.width - 20,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: selectedColor,
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {},
+              child: Container(
+                height: size.height / 7,
+                width: size.width - 20,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: selectedColor,
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
                 PanaraConfirmDialog.showAnimatedGrow(
                   context,
                   title: "Delete All?",
@@ -156,11 +225,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   noImage: true,
                 );
               },
+              child: Container(
+                height: size.height / 7,
+                width: size.width - 20,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: selectedColor,
+                ),
+                child: const Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(24.0),
+                      child: Icon(
+                        Icons.delete,
+                        size: 50,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Delete All Tasks',
+                          style: TextStyle(color: Colors.black, fontSize: 26),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
             ),
-            //todo: do something for here
-            SizedBox(
-              height: 260,
-            )
           ],
         ),
       ),
