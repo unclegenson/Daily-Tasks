@@ -2,6 +2,7 @@ import 'package:daily_tasks/main.dart';
 import 'package:daily_tasks/models/models.dart';
 import 'package:daily_tasks/screens/add_task_screen.dart';
 import 'package:daily_tasks/screens/edit_profile_screens.dart';
+import 'package:daily_tasks/screens/notitfications.dart';
 import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -17,7 +18,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 bool purchase = false;
-bool reminder = false;
 
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
@@ -83,19 +83,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 );
               },
               child: Container(
-                height: size.height / 7,
+                height: size.height / 10,
                 width: size.width - 20,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: selectedColor,
+                  color: Colors.white,
                 ),
                 child: const Row(
                   children: [
                     Padding(
-                      padding: EdgeInsets.all(24.0),
+                      padding: EdgeInsets.all(14.0),
                       child: Icon(
                         Icons.person,
-                        size: 50,
+                        size: 45,
                         color: Colors.black,
                       ),
                     ),
@@ -104,7 +104,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Text(
                           'Edit Profile',
-                          style: TextStyle(color: Colors.black, fontSize: 26),
+                          style: TextStyle(color: Colors.black, fontSize: 20),
                         ),
                       ],
                     )
@@ -120,7 +120,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 setState(() {
                   if (purchase == true) {
-                    reminder = !reminder;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return const NotificationsScreen();
+                        },
+                      ),
+                    );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -135,19 +142,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 });
               },
               child: Container(
-                height: size.height / 7,
+                height: size.height / 10,
                 width: size.width - 20,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: selectedColor,
+                  color: Colors.white,
                 ),
                 child: const Row(
                   children: [
                     Padding(
-                      padding: EdgeInsets.all(24.0),
+                      padding: EdgeInsets.all(14.0),
                       child: Icon(
                         Icons.notifications_active,
-                        size: 50,
+                        size: 45,
                         color: Colors.black,
                       ),
                     ),
@@ -156,7 +163,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Text(
                           'Notifications',
-                          style: TextStyle(color: Colors.black, fontSize: 26),
+                          style: TextStyle(color: Colors.black, fontSize: 20),
                         ),
                       ],
                     )
@@ -167,22 +174,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
             GestureDetector(
               onTap: () {},
               child: Container(
-                height: size.height / 7,
+                height: size.height / 10,
                 width: size.width - 20,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: selectedColor,
+                  color: Colors.white,
                 ),
               ),
             ),
             GestureDetector(
               onTap: () {},
               child: Container(
-                height: size.height / 7,
+                height: size.height / 10,
                 width: size.width - 20,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: selectedColor,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {},
+              child: Container(
+                height: size.height / 10,
+                width: size.width - 20,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {},
+              child: Container(
+                height: size.height / 10,
+                width: size.width - 20,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -226,19 +255,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 );
               },
               child: Container(
-                height: size.height / 7,
+                height: size.height / 10,
                 width: size.width - 20,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: selectedColor,
+                  color: Colors.white,
                 ),
                 child: const Row(
                   children: [
                     Padding(
-                      padding: EdgeInsets.all(24.0),
+                      padding: EdgeInsets.all(14.0),
                       child: Icon(
                         Icons.delete,
-                        size: 50,
+                        size: 45,
                         color: Colors.black,
                       ),
                     ),
@@ -247,7 +276,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Text(
                           'Delete All Tasks',
-                          style: TextStyle(color: Colors.black, fontSize: 26),
+                          style: TextStyle(color: Colors.black, fontSize: 20),
                         ),
                       ],
                     )

@@ -31,6 +31,20 @@ void main() async {
       )
     ],
   );
+  AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: 13,
+      channelKey: 'chanel',
+      title: 'Daily Tasks reminder',
+      body: 'make your plan for tomorrow for a beeter day',
+    ),
+    schedule: NotificationCalendar(
+      hour: 23,
+      minute: 0,
+      second: 0,
+      repeats: true,
+    ),
+  );
 
   bool isAllowToSendNotification =
       await AwesomeNotifications().isNotificationAllowed();
