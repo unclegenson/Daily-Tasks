@@ -273,6 +273,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                       reviewDescriptions[index] != ''
                                           ? Text(
                                               reviewDescriptions[index],
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
                                               style: const TextStyle(
                                                 color: Colors.black54,
                                                 fontSize: 14,

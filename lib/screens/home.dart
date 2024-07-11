@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -17,7 +18,7 @@ List voiceList = [];
 
 bool showSearchBar = false;
 List weekDays = ['Mon', 'Tue', 'Wed', 'Tur', 'Fri', 'Sat', 'Sun'];
-List texts = [];
+List titles = [];
 List copyOfTexts = [];
 
 List descriptions = [];
@@ -138,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         floatingActionButton: fabWidget(),
         body: Center(
-          child: texts.isEmpty
+          child: titles.isEmpty
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -191,8 +192,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           // !-------------------image------------------
                                                           image:
                                                               DecorationImage(
-                                                            fit:
-                                                                BoxFit.fitWidth,
                                                             image: FileImage(
                                                               File(
                                                                 boxImages[
@@ -230,7 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             voice: voiceList[index],
                                             image: boxImages[index],
                                             id: index.toString(),
-                                            title: texts[index],
+                                            title: titles[index],
                                             category: categories[index],
                                             description: descriptions[index],
                                             done: false,
@@ -276,7 +275,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.end,
                                           children: [
-                                            voiceList[index] == null
+                                            voiceList[index] == '' ||
+                                                    voiceList[index] == null
                                                 ? Column(
                                                     children: [
                                                       Container(
@@ -291,8 +291,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           alignment:
                                                               Alignment.topLeft,
                                                           child: Text(
-                                                            texts[
-                                                                index], //!--------------------TEXT-----------------------
+                                                            titles[
+                                                                index], //!--------------------TITLE-----------------------
                                                             style:
                                                                 const TextStyle(
                                                               fontSize: 22,
@@ -349,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             const EdgeInsets
                                                                 .all(8.0),
                                                         child: Text(
-                                                          texts[
+                                                          titles[
                                                               index], //!--------------------TEXT-----------------------
                                                           style:
                                                               const TextStyle(
@@ -536,7 +536,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                         index],
                                                                     id: index
                                                                         .toString(),
-                                                                    title: texts[
+                                                                    title: titles[
                                                                         index],
                                                                     category:
                                                                         categories[
@@ -769,7 +769,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             });
                           },
-                          childCount: texts.length,
+                          childCount: titles.length,
                         ),
                         gridDelegate: SliverQuiltedGridDelegate(
                           crossAxisCount: 2,
@@ -859,7 +859,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 void textsListCreate() {
   descriptions.clear();
-  texts.clear();
+  titles.clear();
   dateTimes.clear();
   categories.clear();
   voiceList.clear();
@@ -877,7 +877,7 @@ void textsListCreate() {
         });
         voiceList.add(element.voice);
         boxImages.add(element.image);
-        texts.add(element.title);
+        titles.add(element.title);
         categories.add(element.category);
         descriptions.add(element.description);
         containerColors.add(Color.fromARGB(element.colorAlpha!,
@@ -885,4 +885,5 @@ void textsListCreate() {
       }
     },
   );
+  print(voiceList);
 }

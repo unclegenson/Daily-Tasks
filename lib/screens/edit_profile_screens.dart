@@ -11,14 +11,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen(
-      {super.key,
-      required this.image,
-      required this.name,
-      required this.number});
-  final String image;
-  final String name;
-  final String number;
+  const EditProfileScreen({
+    super.key,
+  });
+
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }

@@ -43,6 +43,10 @@ List colorItems = const [
 String? selectedCategory;
 bool isRecording = false;
 
+File? _image;
+String? imageString;
+final picker = ImagePicker();
+
 class AddNoteScreen extends StatefulWidget {
   const AddNoteScreen({super.key, required this.note});
   final Notes note;
@@ -157,9 +161,6 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     }
   }
 
-  File? _image;
-  String? imageString;
-  final picker = ImagePicker();
   //Image Picker function to get image from gallery
   Future getImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -242,7 +243,8 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     initRecorder();
 
     setState(() {
-      if (widget.note.voice == '' || widget.note.voice == null) {
+      _image = null;
+      if (widget.note.voice == '') {
         micOn = false;
       } else {
         micOn = true;
@@ -263,8 +265,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           mainTitleText = widget.note.title;
           mainDescriptionText = widget.note.description;
           selectedCategory = widget.note.category;
-          if (widget.note.image != null) {
+          if (widget.note.image != '') {
             _image = File(widget.note.image!);
+            imageString = widget.note.image;
           }
         });
       }
@@ -414,12 +417,12 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                                 ),
                               ),
                               hint: Text(
-                                anythingToShow && widget.note.voice == null
+                                anythingToShow && widget.note.voice == ''
                                     ? widget.note.category!
                                     : ' Category',
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w300,
+                                  fontWeight: FontWeight.w400,
                                 ),
                               ),
                               items: categoryItems
@@ -580,9 +583,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                                 ),
                                 IconButton(
                                   onPressed: () {
-                                    if (pathOfVoice != null ||
-                                        pathOfVoice != '') {
-                                      print('------------------------');
+                                    if (pathOfVoice != '') {
                                       setAudio();
                                       audioPlayer.resume();
                                     }
@@ -710,16 +711,27 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      if ((mainTitleText == null || pathOfVoice == null) ||
-                          (mainDescriptionText == null ||
-                              mainTitleText == null)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            duration: Duration(milliseconds: 1500),
-                            behavior: SnackBarBehavior.fixed,
-                            content: Text('Input data is empty!'),
-                          ),
-                        );
+                      if (mainTitleText == '') {
+                        if (pathOfVoice == '' && micOn) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              duration: Duration(milliseconds: 1500),
+                              behavior: SnackBarBehavior.fixed,
+                              content: Text(
+                                  'There is no voice or title to create a task!'),
+                            ),
+                          );
+                        }
+                        if (!micOn && mainDescriptionText == '') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              duration: Duration(milliseconds: 1500),
+                              behavior: SnackBarBehavior.fixed,
+                              content: Text(
+                                  'There is no title or description to create a task!'),
+                            ),
+                          );
+                        }
                       } else {
                         if (anythingToShow) {
                           await Hive.box<Notes>('notesBox').putAt(
@@ -777,16 +789,16 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                             const SnackBar(
                               duration: Duration(milliseconds: 1500),
                               behavior: SnackBarBehavior.fixed,
-                              content: Text('Task Added!'),
+                              content: Text('Task Added successfully'),
                             ),
                           );
-                          if (imageString != null) {
+                          if (imageString != '') {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                duration: Duration(milliseconds: 2500),
+                                duration: Duration(milliseconds: 3500),
                                 behavior: SnackBarBehavior.fixed,
                                 content: Text(
-                                    'Long press on each Note to see each image'),
+                                    "Long press on each Task to see it's image"),
                               ),
                             );
                           }
@@ -813,9 +825,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                           ),
                         );
                         //! -------------------
-                        selectedCategory = null;
-                        mainDescriptionText = null;
-                        mainTitleText = null;
+                        selectedCategory = '';
+                        mainDescriptionText = '';
+                        imageString = '';
+                        mainTitleText = '';
+                        _image = null;
                         pathOfVoice = '';
                       }
                     },
