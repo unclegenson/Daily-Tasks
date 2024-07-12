@@ -2,6 +2,7 @@ import 'package:daily_tasks/screens/add_task_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bottom_picker/bottom_picker.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CalenderWidget extends StatefulWidget {
   const CalenderWidget({
@@ -24,7 +25,7 @@ class _CalenderWidgetState extends State<CalenderWidget> {
     void openDateTimePicker(BuildContext context) {
       BottomPicker.dateTime(
         pickerTitle: Text(
-          'Choose Note Date',
+          AppLocalizations.of(context)!.chooseTaskDate,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18,
@@ -147,7 +148,7 @@ class _DescriptionInputWidgetState extends State<DescriptionInputWidget> {
             color: Colors.white,
             fontWeight: FontWeight.w300,
           ),
-          hintText: 'Description',
+          hintText: AppLocalizations.of(context)!.description,
           prefixText: '  ',
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
@@ -201,7 +202,7 @@ class _TitleInputWidgetState extends State<TitleInputWidget> {
             color: Colors.white,
             fontWeight: FontWeight.w300,
           ),
-          hintText: 'Title',
+          hintText: AppLocalizations.of(context)!.title,
           prefixText: '  ',
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),

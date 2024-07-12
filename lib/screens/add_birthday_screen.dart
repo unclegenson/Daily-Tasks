@@ -11,6 +11,7 @@ import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddBirthday extends StatefulWidget {
   const AddBirthday({super.key});
@@ -60,7 +61,7 @@ class _AddBirthdayState extends State<AddBirthday> {
   void openDateTimePicker2(BuildContext context) {
     BottomPicker.date(
       pickerTitle: Text(
-        'Choose Birthday Date',
+        AppLocalizations.of(context)!.addBirthdayDate,
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 18,
@@ -125,9 +126,9 @@ class _AddBirthdayState extends State<AddBirthday> {
           },
         ),
         backgroundColor: Colors.black87,
-        title: const MyAppBarTitle(
+        title: MyAppBarTitle(
           fontSize: 46,
-          title: 'Birthday List',
+          title: AppLocalizations.of(context)!.birthdaylist,
         ),
       ),
       body: SingleChildScrollView(
@@ -185,7 +186,9 @@ class _AddBirthdayState extends State<AddBirthday> {
                   padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
                   child: SettingsCategoryWidget(
                       color: Colors.white,
-                      text: !wantToChange ? 'Add Name :' : 'Edit Name :'),
+                      text: !wantToChange
+                          ? AppLocalizations.of(context)!.addName
+                          : AppLocalizations.of(context)!.editName),
                 ),
                 Padding(
                   padding:
@@ -205,8 +208,8 @@ class _AddBirthdayState extends State<AddBirthday> {
                   child: SettingsCategoryWidget(
                     color: Colors.white,
                     text: !wantToChange
-                        ? 'Add Birthday date :'
-                        : 'Edit birthday date :',
+                        ? AppLocalizations.of(context)!.addBirthdayDate
+                        : AppLocalizations.of(context)!.editBirthdayDate,
                   ),
                 ),
                 AnimatedContainer(
@@ -248,8 +251,8 @@ class _AddBirthdayState extends State<AddBirthday> {
                   child: SettingsCategoryWidget(
                     color: Colors.white,
                     text: !wantToChange
-                        ? 'Add Phone Number :'
-                        : 'Edit Phone Number :',
+                        ? AppLocalizations.of(context)!.addPhoneNumber
+                        : AppLocalizations.of(context)!.editPhoneNumber,
                   ),
                 ),
                 Padding(
@@ -298,7 +301,7 @@ class _AddBirthdayState extends State<AddBirthday> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                'We will let you know at $time!',
+                                'We will let you know at $time!', // add this to localization
                               ),
                               duration: const Duration(milliseconds: 1800),
                             ),
@@ -318,18 +321,19 @@ class _AddBirthdayState extends State<AddBirthday> {
                               channelKey: 'chanel',
                               title: 'Daily Tasks',
                               body:
-                                  "$nameCon's birthday is next week on ${time.day}!",
+                                  "$nameCon's birthday is next week on ${time.day}!", // add this to localization
                             ),
                           );
 
                           Navigator.pop(context);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
+                            SnackBar(
                               content: Text(
-                                'Edit the birthday items please!',
+                                AppLocalizations.of(context)!
+                                    .editTheBirthdayItem,
                               ),
-                              duration: Duration(milliseconds: 1800),
+                              duration: const Duration(milliseconds: 1800),
                             ),
                           );
                         }
@@ -362,13 +366,13 @@ class _AddBirthdayState extends State<AddBirthday> {
                               channelKey: 'chanel',
                               title: 'Daily Tasks',
                               body:
-                                  "$nameCon's birthday is next week on ${time.day}!",
+                                  "$nameCon's birthday is next week on ${time.day}!", // add this to localization
                             ),
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                'We will let you know at $time!',
+                                'We will let you know at $time!', // add this to localization
                               ),
                               duration: const Duration(milliseconds: 1800),
                             ),
@@ -377,19 +381,19 @@ class _AddBirthdayState extends State<AddBirthday> {
                           Navigator.pop(context);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
+                            SnackBar(
                               content: Text(
-                                'Nothing added!',
+                                AppLocalizations.of(context)!.nothingAdded,
                               ),
-                              duration: Duration(milliseconds: 1800),
+                              duration: const Duration(milliseconds: 1800),
                             ),
                           );
                         }
                       }
                     },
-                    child: const Text(
-                      'Save',
-                      style: TextStyle(color: Colors.black, fontSize: 20),
+                    child: Text(
+                      AppLocalizations.of(context)!.save,
+                      style: const TextStyle(color: Colors.black, fontSize: 20),
                     ),
                   ),
                 )

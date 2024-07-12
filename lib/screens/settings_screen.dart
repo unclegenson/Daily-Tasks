@@ -8,7 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-// import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -59,7 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: Colors.black87,
         title: MyAppBarTitle(
           fontSize: 46,
-          title: AppLocalizations.of(context)!.helloWorld,
+          title: AppLocalizations.of(context)!.settings,
         ),
       ),
       body: Padding(
@@ -90,20 +90,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     color: Colors.indigo[400],
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Column(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.person,
                         size: 45,
                         color: Colors.white,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Text(
-                        'Edit Profile',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.editProfile,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 22,
                           fontWeight: FontWeight.w500,
@@ -138,20 +138,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       color: Colors.orangeAccent,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Column(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.notifications_active_rounded,
                           size: 45,
                           color: Colors.white,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Text(
-                          'Notifications',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.notifications,
+                          style: const TextStyle(
                             fontSize: 22,
                             color: Colors.white,
                             fontWeight: FontWeight.w500,
@@ -186,20 +186,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       color: Colors.teal,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Column(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.language,
                           size: 45,
                           color: Colors.white,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Text(
-                          'Lnaguage',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.language,
+                          style: const TextStyle(
                             fontSize: 22,
                             color: Colors.white,
                             fontWeight: FontWeight.w500,
@@ -216,11 +216,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onTap: () {
                   PanaraConfirmDialog.showAnimatedGrow(
                     context,
-                    title: "Delete All?",
-                    message:
-                        "Press Delete if you want to delete all the available tasks.",
-                    confirmButtonText: "Delete",
-                    cancelButtonText: "Cancel",
+                    title: AppLocalizations.of(context)!.deleteAllTasks,
+                    message: AppLocalizations.of(context)!.pressDeleteIf,
+                    confirmButtonText: AppLocalizations.of(context)!.delete,
+                    cancelButtonText: AppLocalizations.of(context)!.cancel,
                     onTapCancel: () {
                       Navigator.pop(context);
                     },
@@ -243,20 +242,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       color: Colors.redAccent,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Column(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.delete,
                           size: 45,
                           color: Colors.white,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Text(
-                          'Delete all Tasks',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.deleteAllTasks,
+                          style: const TextStyle(
                             fontSize: 22,
                             color: Colors.white,
                             fontWeight: FontWeight.w500,

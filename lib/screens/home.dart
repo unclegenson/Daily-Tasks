@@ -13,6 +13,7 @@ import 'package:daily_tasks/screens/drawer_screen.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import '../widgets/app_widgets.dart';
 import 'package:flutter_sound/public/flutter_sound_player.dart' as h;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 List voiceList = [];
 
@@ -148,9 +149,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       colorFilter: const ColorFilter.mode(
                           Colors.white, BlendMode.srcATop),
                     ),
-                    const Text(
-                      'Add a new Task!',
-                      style: TextStyle(color: Colors.white, fontSize: 30),
+                    Text(
+                      AppLocalizations.of(context)!.addANewTask,
+                      style: const TextStyle(color: Colors.white, fontSize: 30),
                     )
                   ],
                 )
@@ -510,13 +511,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             PanaraConfirmDialog
                                                                 .showAnimatedGrow(
                                                               context,
-                                                              title: "Done?",
-                                                              message:
-                                                                  "Press Yes if you'he done this task.",
+                                                              title: AppLocalizations
+                                                                      .of(context)!
+                                                                  .done2,
+                                                              message: AppLocalizations
+                                                                      .of(context)!
+                                                                  .pressYesIf,
                                                               confirmButtonText:
-                                                                  "Yes",
+                                                                  AppLocalizations.of(
+                                                                          context)!
+                                                                      .yes,
                                                               cancelButtonText:
-                                                                  "No",
+                                                                  AppLocalizations.of(
+                                                                          context)!
+                                                                      .no,
                                                               onTapCancel: () {
                                                                 Navigator.pop(
                                                                     context);
@@ -653,14 +661,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   PanaraConfirmDialog
                                                                       .showAnimatedGrow(
                                                                     context,
-                                                                    title:
-                                                                        "Delete this note?",
-                                                                    message:
-                                                                        "Are you sure you want to delete this note?",
+                                                                    title: AppLocalizations.of(
+                                                                            context)!
+                                                                        .deleteThisTask,
+                                                                    message: AppLocalizations.of(
+                                                                            context)!
+                                                                        .areYouSureDelete,
                                                                     confirmButtonText:
-                                                                        "Yes",
+                                                                        AppLocalizations.of(context)!
+                                                                            .yes,
                                                                     cancelButtonText:
-                                                                        "No",
+                                                                        AppLocalizations.of(context)!
+                                                                            .no,
                                                                     onTapCancel:
                                                                         () {
                                                                       Navigator.pop(

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
 import 'package:flutter_sound/public/flutter_sound_player.dart' as h;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 List reviewDescriptions = [];
 List reviewTexts = [];
@@ -132,8 +133,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
           }),
           backgroundColor: Colors.black87,
           centerTitle: true,
-          title: const MyAppBarTitle(
-            title: 'Review Last Tasks',
+          title: MyAppBarTitle(
+            title: AppLocalizations.of(context)!.reviewLastTasks,
             fontSize: 42,
           ),
           titleSpacing: 10,

@@ -5,6 +5,7 @@ import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddCategoryScreen extends StatefulWidget {
   const AddCategoryScreen({super.key});
@@ -71,9 +72,9 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
           },
         ),
         backgroundColor: Colors.black87,
-        title: const MyAppBarTitle(
+        title: MyAppBarTitle(
           fontSize: 46,
-          title: 'Categories',
+          title: AppLocalizations.of(context)!.categories,
         ),
       ),
       body: SingleChildScrollView(
@@ -121,9 +122,11 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
                   child: SettingsCategoryWidget(
-                      color: Colors.white,
-                      text:
-                          !wantToChange ? 'Add Category :' : 'Edit Category :'),
+                    color: Colors.white,
+                    text: !wantToChange
+                        ? AppLocalizations.of(context)!.addCategory
+                        : AppLocalizations.of(context)!.editCategory,
+                  ),
                 ),
                 Padding(
                   padding:
@@ -161,11 +164,11 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                           Navigator.pop(context);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
+                            SnackBar(
                               content: Text(
-                                'Edit the task please!',
+                                AppLocalizations.of(context)!.editTheTaskPlease,
                               ),
-                              duration: Duration(milliseconds: 800),
+                              duration: const Duration(milliseconds: 800),
                             ),
                           );
                         }
@@ -179,19 +182,19 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                           Navigator.pop(context);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
+                            SnackBar(
                               content: Text(
-                                'Nothing added!',
+                                AppLocalizations.of(context)!.nothingAdded,
                               ),
-                              duration: Duration(milliseconds: 800),
+                              duration: const Duration(milliseconds: 800),
                             ),
                           );
                         }
                       }
                     },
-                    child: const Text(
-                      'Done',
-                      style: TextStyle(color: Colors.black, fontSize: 20),
+                    child: Text(
+                      AppLocalizations.of(context)!.save,
+                      style: const TextStyle(color: Colors.black, fontSize: 20),
                     ),
                   ),
                 )

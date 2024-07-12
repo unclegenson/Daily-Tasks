@@ -7,6 +7,8 @@ import 'package:daily_tasks/models/models.dart';
 import 'screens/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 String profileImage = '';
 String profileName = '';
@@ -30,20 +32,6 @@ void main() async {
         channelGroupName: 'basic group',
       )
     ],
-  );
-  AwesomeNotifications().createNotification(
-    content: NotificationContent(
-      id: 13,
-      channelKey: 'chanel',
-      title: 'Daily Tasks reminder',
-      body: 'make your plan for tomorrow for a beeter day',
-    ),
-    schedule: NotificationCalendar(
-      hour: 23,
-      minute: 0,
-      second: 0,
-      repeats: true,
-    ),
   );
 
   bool isAllowToSendNotification =
@@ -72,11 +60,34 @@ class App extends StatefulWidget {
   State<App> createState() => _AppState();
 }
 
+int reminderHour = 23;
+int reminderMin = 0;
+
+Future<void> setReminderTime() async {
+  SharedPreferences prefDailyReminderHour =
+      await SharedPreferences.getInstance();
+  SharedPreferences prefDailyReminderMin =
+      await SharedPreferences.getInstance();
+
+  prefDailyReminderMin.setInt('reminderMin', reminderMin);
+  prefDailyReminderHour.setInt('reminderHour', reminderHour);
+}
+
+String language = 'en';
+checkLanguage() async {
+  SharedPreferences prefLanguage = await SharedPreferences.getInstance();
+
+  language = prefLanguage.getString('language')!;
+}
+
 class _AppState extends State<App> {
   checkEnterForFirstTime() async {
+    SharedPreferences prefLanguage = await SharedPreferences.getInstance();
     SharedPreferences isActivePref = await SharedPreferences.getInstance();
     if (isActivePref.getBool('isActive') == null) {
       setProfileData();
+      setReminderTime();
+      prefLanguage.setString("language", "en");
       // scheduleDailyNotification();
     } else {
       getProfile();
@@ -95,6 +106,21 @@ class _AppState extends State<App> {
           NotificationController.onNotificationCreatedMethod,
       onNotificationDisplayedMethod:
           NotificationController.onNotificationDisplayedMethod,
+    );
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 13,
+        wakeUpScreen: true,
+        category: NotificationCategory.Reminder,
+        channelKey: 'chanel',
+        title: 'Daily Tasks reminder',
+        body: "Make your tomorrow's plan ready!",
+      ),
+      schedule: NotificationCalendar(
+        hour: reminderHour,
+        minute: reminderMin,
+        repeats: true,
+      ),
     );
     super.initState();
   }
@@ -133,6 +159,14 @@ class _AppState extends State<App> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(systemNavigationBarColor: Colors.black),
       child: MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        locale: Locale(language),
+        supportedLocales: const [Locale('en'), Locale('fa')],
         debugShowCheckedModeBanner: false,
         title: 'Daily Tasks',
         home: FutureBuilder(
@@ -141,7 +175,8 @@ class _AppState extends State<App> {
             if (snapshot.data == true) {
               return const HomeScreen();
             } else {
-              return const EditProfileScreen(image: '', name: '', number: '');
+              return const EditProfileScreen();
+              //todo: fix editprofilescreen for opening for the first time
             }
           },
         ),
@@ -150,7 +185,4 @@ class _AppState extends State<App> {
   }
 }
 
-//todo: add image to db and show it at top right of eaach note
-// todo: fix search 
-// todo: start drawer items
 //todo: add link app

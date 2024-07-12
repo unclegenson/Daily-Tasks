@@ -12,6 +12,7 @@ import 'package:zarinpal/zarinpal.dart';
 import '../widgets/drawer_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 late AnimationController animeController;
 
@@ -151,7 +152,7 @@ class _DrawerWidgetState extends State<DrawerWidget>
                   ),
                 );
               },
-              text: 'Review',
+              text: AppLocalizations.of(context)!.review,
               icon: Icons.bar_chart_rounded,
             ),
             DrawerListTile(
@@ -165,7 +166,7 @@ class _DrawerWidgetState extends State<DrawerWidget>
                   ),
                 );
               },
-              text: 'Premium V.',
+              text: AppLocalizations.of(context)!.premiumV,
               icon: Icons.beach_access_rounded,
             ),
             DrawerListTile(
@@ -179,7 +180,7 @@ class _DrawerWidgetState extends State<DrawerWidget>
                   ),
                 );
               },
-              text: 'Add Category',
+              text: AppLocalizations.of(context)!.addCategory,
               icon: Icons.category_outlined,
             ),
             DrawerListTile(
@@ -190,12 +191,13 @@ class _DrawerWidgetState extends State<DrawerWidget>
                 if (!purchase == false) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       behavior: SnackBarBehavior.fixed,
-                      duration: Duration(
+                      duration: const Duration(
                         milliseconds: 2500,
                       ),
-                      content: Text('You are not a permium contact'),
+                      content: Text(AppLocalizations.of(context)!
+                          .youAreNotAPremiumContact),
                     ),
                   );
                 } else {
@@ -209,7 +211,7 @@ class _DrawerWidgetState extends State<DrawerWidget>
                   );
                 }
               },
-              text: 'Add Birthday',
+              text: AppLocalizations.of(context)!.addBirthdayDate,
               icon: Icons.cake_sharp,
             ),
             DrawerListTile(
@@ -257,11 +259,11 @@ class _DrawerWidgetState extends State<DrawerWidget>
                   }
                 });
               },
-              text: 'Buy me a coffee',
+              text: AppLocalizations.of(context)!.buyMeACoffee,
               icon: Icons.coffee_rounded,
             ),
             DrawerListTile(
-              text: 'Settings',
+              text: AppLocalizations.of(context)!.settings,
               icon: Icons.settings,
               func: () {
                 Navigator.push(
@@ -280,14 +282,15 @@ class _DrawerWidgetState extends State<DrawerWidget>
               endIndent: 20,
             ),
             DrawerListTile(
-              text: 'Invite Friends',
+              text: AppLocalizations.of(context)!.inviteFriends,
               icon: Icons.person_add,
               func: () async {
-                await Share.share('check out this app...');
+                await Share.share(
+                    AppLocalizations.of(context)!.checkOutThisApp);
               },
             ),
             DrawerListTile(
-              text: 'Contact Us',
+              text: AppLocalizations.of(context)!.contactUs,
               icon: Icons.bubble_chart_rounded,
               func: () {
                 _openUrl('mailto:unclegenson@gmail.com');

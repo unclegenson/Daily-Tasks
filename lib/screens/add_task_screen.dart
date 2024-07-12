@@ -18,6 +18,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/add_note_widget.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 List categoryItems = [];
 
@@ -73,9 +74,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           actions: [
             TextButton(
               onPressed: Navigator.of(context).pop,
-              child: const Text(
-                'CANCEL',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context)!.cancel,
+                style: const TextStyle(
                   color: Colors.black,
                 ),
               ),
@@ -84,9 +85,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text(
-                'SUBMIT',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context)!.sumbit,
+                style: const TextStyle(
                   color: Colors.black,
                 ),
               ),
@@ -101,11 +102,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     SharedPreferences premium = await SharedPreferences.getInstance();
     if (premium.getBool('purchase')!) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'You are not a Premium contact yet!',
+            AppLocalizations.of(context)!.youAreNotAPremiumContact,
           ),
-          duration: Duration(milliseconds: 2500),
+          duration: const Duration(milliseconds: 2500),
         ),
       );
     } else {
@@ -122,9 +123,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   ),
                   backgroundColor: selectedColor,
                 ),
-                child: const Text(
-                  'Photo Gallery',
-                  style: TextStyle(color: Colors.black),
+                child: Text(
+                  AppLocalizations.of(context)!.gallery,
+                  style: const TextStyle(color: Colors.black),
                 ),
                 onPressed: () {
                   // close the options modal
@@ -143,9 +144,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   ),
                   backgroundColor: selectedColor,
                 ),
-                child: const Text(
-                  'Camera',
-                  style: TextStyle(color: Colors.black),
+                child: Text(
+                  AppLocalizations.of(context)!.camera,
+                  style: const TextStyle(color: Colors.black),
                 ),
                 onPressed: () {
                   // close the options modal
@@ -186,7 +187,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
   void _openColorPicker() async {
     _openDialog(
-      "Color picker",
+      AppLocalizations.of(context)!.colorPicker,
       MaterialColorPicker(
         selectedColor: _shadeColor,
         onColorChange: (color) => setState(() => selectedColor = color),
@@ -328,7 +329,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           backgroundColor: Colors.black87,
           centerTitle: true,
           title: MyAppBarTitle(
-            title: anythingToShow ? 'Edit Task' : 'Add Task',
+            title: anythingToShow
+                ? AppLocalizations.of(context)!.editTask
+                : AppLocalizations.of(context)!.addTask,
             fontSize: 46,
           ),
           titleSpacing: 10,
@@ -355,11 +358,12 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                       if (premium.getBool('purchase')!) {
                         //todo: ! here
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text(
-                              'You are not a Premium contact yet!',
+                              AppLocalizations.of(context)!
+                                  .youAreNotAPremiumContact,
                             ),
-                            duration: Duration(milliseconds: 2500),
+                            duration: const Duration(milliseconds: 2500),
                           ),
                         );
                       } else {
@@ -419,7 +423,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                               hint: Text(
                                 anythingToShow && widget.note.voice == ''
                                     ? widget.note.category!
-                                    : ' Category',
+                                    : AppLocalizations.of(context)!.category,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w400,
@@ -437,7 +441,8 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                                   .toList(),
                               validator: (value) {
                                 if (value == null) {
-                                  return 'Please select a category.';
+                                  return AppLocalizations.of(context)!
+                                      .pleaseSelectACategory;
                                 }
                                 return null;
                               },
@@ -480,8 +485,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                           children: [
                             Text(
                               isRecording
-                                  ? 'Recording...'
-                                  : 'Click the button to start reording...',
+                                  ? AppLocalizations.of(context)!.recordeing
+                                  : AppLocalizations.of(context)!
+                                      .clickTheButtons,
                               style: TextStyle(color: selectedColor),
                             ),
                             const SizedBox(
@@ -658,11 +664,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                                     ),
                                   ),
                                 ),
-                          const Padding(
-                            padding: EdgeInsets.only(left: 18, top: 18),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 18, top: 18),
                             child: Text(
-                              'Attach an image',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.attachAnImage,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w300,
@@ -685,18 +691,18 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                           ),
                           width: size.width / 2 - 20,
                           height: 100,
-                          child: const Center(
+                          child: Center(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Pick a Color',
-                                  style: TextStyle(fontSize: 17),
+                                  AppLocalizations.of(context)!.pickAColor,
+                                  style: const TextStyle(fontSize: 17),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 6,
                                 ),
-                                Icon(
+                                const Icon(
                                   Icons.imagesearch_roller_rounded,
                                   size: 18,
                                 )
@@ -714,21 +720,21 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                       if (mainTitleText == '') {
                         if (pathOfVoice == '' && micOn) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              duration: Duration(milliseconds: 1500),
+                            SnackBar(
+                              duration: const Duration(milliseconds: 1500),
                               behavior: SnackBarBehavior.fixed,
-                              content: Text(
-                                  'There is no voice or title to create a task!'),
+                              content: Text(AppLocalizations.of(context)!
+                                  .thereIsNoVoiceOrTitle),
                             ),
                           );
                         }
                         if (!micOn && mainDescriptionText == '') {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              duration: Duration(milliseconds: 1500),
+                            SnackBar(
+                              duration: const Duration(milliseconds: 1500),
                               behavior: SnackBarBehavior.fixed,
-                              content: Text(
-                                  'There is no title or description to create a task!'),
+                              content: Text(AppLocalizations.of(context)!
+                                  .thereIsNoTitleOrDescription),
                             ),
                           );
                         }
@@ -757,10 +763,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                             ),
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              duration: Duration(milliseconds: 1500),
+                            SnackBar(
+                              duration: const Duration(milliseconds: 1500),
                               behavior: SnackBarBehavior.fixed,
-                              content: Text('Task Edited!'),
+                              content: Text(
+                                  AppLocalizations.of(context)!.taskEdited),
                             ),
                           );
                         } else {
@@ -786,19 +793,21 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                             ),
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              duration: Duration(milliseconds: 1500),
+                            SnackBar(
+                              duration: const Duration(milliseconds: 1500),
                               behavior: SnackBarBehavior.fixed,
-                              content: Text('Task Added successfully'),
+                              content: Text(AppLocalizations.of(context)!
+                                  .taskEditedSuccessfully),
                             ),
                           );
                           if (imageString != '') {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                duration: Duration(milliseconds: 3500),
+                              SnackBar(
+                                duration: const Duration(milliseconds: 3500),
                                 behavior: SnackBarBehavior.fixed,
                                 content: Text(
-                                    "Long press on each Task to see it's image"),
+                                  AppLocalizations.of(context)!.longPressTo,
+                                ),
                               ),
                             );
                           }
@@ -820,8 +829,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                             color: selectedColor,
                             id: 10,
                             channelKey: 'chanel',
-                            title: 'Daily Tasks',
-                            body: 'time of $mainTitleText is now!',
+                            title: 'Daily Tasks', //add this to localization
+                            body:
+                                'time of $mainTitleText is now!', //add this to localization
                           ),
                         );
                         //! -------------------
@@ -844,7 +854,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                       height: 60,
                       child: Center(
                         child: Text(
-                          anythingToShow ? 'Edit Task' : 'Create Task',
+                          anythingToShow
+                              ? AppLocalizations.of(context)!.editTask
+                              : AppLocalizations.of(context)!.createTask,
                           style: const TextStyle(
                               color: Colors.black, fontSize: 20),
                         ),

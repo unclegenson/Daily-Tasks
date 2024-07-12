@@ -4,6 +4,7 @@ import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -47,9 +48,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   void openDateTimePicker(BuildContext context) {
     BottomPicker.time(
       initialTime: Time.now(),
-      pickerTitle: const Text(
-        'reminder time :',
-        style: TextStyle(
+      pickerTitle: Text(
+        AppLocalizations.of(context)!.reminderTime,
+        style: const TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 18,
           color: Colors.blue,
@@ -105,8 +106,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           }),
           backgroundColor: Colors.black87,
           centerTitle: true,
-          title: const MyAppBarTitle(
-            title: 'Notification Settings',
+          title: MyAppBarTitle(
+            title: AppLocalizations.of(context)!.notificationSettings,
             fontSize: 42,
           ),
           titleSpacing: 10,
@@ -121,11 +122,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 8, left: 8, right: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
                     child: SettingsCategoryWidget(
-                        color: Colors.white,
-                        text: 'Choose your best daily reminder :'),
+                      color: Colors.white,
+                      text: AppLocalizations.of(context)!.chooseBestDaily,
+                    ),
                   ),
                   const SizedBox(
                     height: 20,
@@ -143,9 +145,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       onPressed: () {
                         return openDateTimePicker(context);
                       },
-                      child: const Text(
-                        'Choose',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      child: Text(
+                        AppLocalizations.of(context)!.choose,
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 20),
                       ),
                     ),
                   ),
@@ -162,9 +165,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
                     child: Row(
                       children: [
-                        const SettingsCategoryWidget(
+                        SettingsCategoryWidget(
                           color: Colors.white,
-                          text: 'Your best daily reminder :',
+                          text: AppLocalizations.of(context)!
+                              .yourBestDailyReminder,
                         ),
                         const Spacer(),
                         Text(
@@ -193,14 +197,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(
+                            content: Text(//add this to localization
                                 'Daily reminder set at ${reminderHour.toString().length > 1 ? '$reminderHour' : '0$reminderHour'} : ${reminderMin.toString().length > 1 ? '$reminderMin' : '0$reminderMin'}'),
                           ),
                         );
                       },
-                      child: const Text(
-                        'Save',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      child: Text(
+                        AppLocalizations.of(context)!.save,
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 20),
                       ),
                     ),
                   )
