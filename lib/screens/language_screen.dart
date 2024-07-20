@@ -21,8 +21,9 @@ List langs = [
 class _LanguageScreenState extends State<LanguageScreen> {
   void setLanguage(String lang) async {
     SharedPreferences prefLanguage = await SharedPreferences.getInstance();
+    prefLanguage.setString("language", lang);
     setState(() {
-      prefLanguage.setString("language", lang);
+      language = lang;
     });
   }
 
@@ -97,11 +98,9 @@ class _LanguageScreenState extends State<LanguageScreen> {
                                 if (index == 0) {
                                   setLanguage('en');
                                   Navigator.pop(context);
-                                  checkLanguage();
                                 } else {
                                   setLanguage('fa');
                                   Navigator.pop(context);
-                                  checkLanguage();
                                 }
                               });
                             },

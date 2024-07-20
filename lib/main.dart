@@ -9,10 +9,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import "dart:async";
 
 String profileImage = '';
 String profileName = '';
 String profileNumber = '';
+
+StreamController<int> streamController = StreamController<int>();
 
 void main() async {
   await AwesomeNotifications().initialize(
@@ -74,13 +77,17 @@ Future<void> setReminderTime() async {
 }
 
 String language = 'en';
-checkLanguage() async {
-  SharedPreferences prefLanguage = await SharedPreferences.getInstance();
-
-  language = prefLanguage.getString('language')!;
-}
 
 class _AppState extends State<App> {
+  void callback() async {
+    SharedPreferences prefLanguage = await SharedPreferences.getInstance();
+
+    language = prefLanguage.getString('language')!;
+    setState(() {
+      language;
+    });
+  }
+
   checkEnterForFirstTime() async {
     SharedPreferences prefLanguage = await SharedPreferences.getInstance();
     SharedPreferences isActivePref = await SharedPreferences.getInstance();

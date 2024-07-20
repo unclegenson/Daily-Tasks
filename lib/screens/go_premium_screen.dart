@@ -3,9 +3,6 @@ import 'package:daily_tasks/screens/settings_screen.dart';
 import 'package:daily_tasks/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:zarinpal/zarinpal.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class GoPremmium extends StatefulWidget {
   const GoPremmium({super.key});
@@ -173,54 +170,7 @@ class _GoPremmiumState extends State<GoPremmium> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: () {
-                        PaymentRequest _paymentRequest = PaymentRequest();
-
-                        _paymentRequest.setIsSandBox(true);
-                        _paymentRequest.setMerchantID("Zarinpal MerchantID");
-                        _paymentRequest.setAmount(69000); //integar Amount
-                        _paymentRequest.setCallbackURL("return://myZarinPal");
-                        _paymentRequest
-                            .setDescription("Daily Tasks Premium Version");
-
-                        String? _paymentUrl;
-
-                        ZarinPal().startPayment(_paymentRequest,
-                            (int? status, String? paymentGatewayUri) async {
-                          print(paymentGatewayUri);
-                          if (status == 100) {
-                            if (!await launchUrl(
-                                Uri.parse(paymentGatewayUri!))) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text('error while routing to zarin pal'),
-                                ),
-                              );
-                            }
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content:
-                                    Text('some error in application happend'),
-                              ),
-                            );
-                          }
-                        });
-
-                        ZarinPal().verificationPayment(
-                            "Status", "Authority Call back", _paymentRequest,
-                            (isPaymentSuccess, refID, paymentRequest) {
-                          if (isPaymentSuccess) {
-                            // Payment Is Success
-                            print("Success");
-                          } else {
-                            // Error Print Status
-                            print("Error");
-                          }
-                        });
-                        //todo: setbool pref with purchase key
-                      },
+                      onPressed: () {},
                       child: const Text(
                         'Purchase',
                         style: TextStyle(color: Colors.black, fontSize: 20),
